@@ -30,12 +30,15 @@ def img_from_base64(b64string):
 
 from PIL import ImageFont
 from PIL import ImageDraw
+import math
 
-font = ImageFont.truetype("MelmaCracked.ttf", 25)
+font = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 150)
 
 
 def say(string):
-    imgsize = (250, 250) #The size of the image
+    scale = 1.5
+    fontsize = font.getsize(string) #The size of the image
+    imgsize = [int(fontsize[0] * scale), int(fontsize[1] * scale)]
 
     image = PImage.new('RGB', imgsize) #Create the image
 
@@ -46,10 +49,10 @@ def say(string):
         for x in range(imgsize[0]):
 
             #Find the distance to the center
-            distanceToCenter = math.sqrt((x - imgsize[0]/2) ** 2 + (y - imgsize[1]/2) ** 2)
+            distanceToCenter = math.sqrt((x) ** 2 + (y ) ** 2)
 
             #Make it on a scale from 0 to 1
-            distanceToCenter = float(distanceToCenter) / (math.sqrt(2) * imgsize[0]/2)
+            distanceToCenter = float(distanceToCenter) / (math.sqrt(2) * imgsize[0])
 
             #Calculate r, g, and b values
             r = outerColor[0] * distanceToCenter + innerColor[0] * (1 - distanceToCenter)
@@ -60,9 +63,8 @@ def say(string):
             #Place the pixel        
             image.putpixel((x, y), (int(r), int(g), int(b)))
 
-    img = PImage.new("RGBA", (500,400), (0,0,0,0))
-    draw = ImageDraw.Draw(img)
-    draw.text((0,0), "This is a test", (255,255,255,1), font=font)
-    draw = ImageDraw.Draw(img)
-    image.save('circlegradient.jpg')
+    draw = ImageDraw.Draw(image)
+    draw.text((int((imgsize[0] - fontsize[0]) / 2),int((imgsize[1] - fontsize[1]) / 2)), 
+              string, (255,255,255,1), font=font)
 
+    return image
