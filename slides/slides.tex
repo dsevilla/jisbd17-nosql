@@ -26,7 +26,7 @@
 %\usetheme{Ilmenau}
 %\usetheme{JuanLesPins}
 %\usetheme{Luebeck}
-\usetheme{Madrid}
+%\usetheme{Madrid}
 %\usetheme{Malmoe}
 %\usetheme{Marburg}
 %\usetheme{Montpellier}
@@ -44,7 +44,7 @@
 %\usecolortheme{albatross}
 %\usecolortheme{beaver}
 %\usecolortheme{beetle}
-\usecolortheme{crane}
+%\usecolortheme{crane}
 %\usecolortheme{dolphin}
 %\usecolortheme{dove}
 %\usecolortheme{fly}
@@ -71,13 +71,13 @@
 \usepackage{listings}
 \usepackage{tikz}
 \usetikzlibrary{positioning,backgrounds}
-\usetikzlibrary{decorations.pathmorphing}
-\usepackage{iwona}
-\usepackage{marvosym}
+\usetikzlibrary{decorations.pathmorphing,math}
+%\usepackage{iwona}
+%\usepackage{marvosym}
 %\usepackage{cfr-lm}
 %\usepackage{pifont}
 %\usepackage{keystroke}
-\usepackage{etoolbox}
+%\usepackage{etoolbox}
 
 %
 % Listados de código
@@ -94,7 +94,7 @@ tabsize=4, % tabulador = 2 espacios
 captionpos=b,
 breaklines=true,
 %backgroundcolor=\color{white},
-numbers=left, numberstyle=\tiny, stepnumber=2, numbersep=10pt,
+%numbers=left, numberstyle=\tiny, stepnumber=2, numbersep=10pt,
 xleftmargin=0.02\textwidth,
 xrightmargin=0.02\textwidth,
 language=java, % Por defecto
@@ -117,10 +117,120 @@ literate={«}{{\guillemotleft}}1
            {¿}{{?`}}1
 }
 
+\colorlet{punct}{red!60!black}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+    basicstyle=\ttfamily,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+%    frame=lines,
+    moredelim=**[is][\color{red}]{@}{@},
+    moredelim=**[is][\color{blue}]{º}{º},
+%    backgroundcolor=\color{background},
+    literate=
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1}
+}
+
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+\lstdefinelanguage{JavaScript}
+{
+  basicstyle=\ttfamily,
+  keywords={typeof,new,true,false,catch,function,return,null,catch,switch,var,if,in,while,do,else,case
+,break},
+ndkeywords={class, export, boolean, throw, implements, import, this},
+ndkeywordstyle=\color{darkgray}\bfseries,
+sensitive=false,
+comment=[l]{//},
+morecomment=[s]{/*}{*/},
+morestring=[b]',
+morestring=[b]"
+}
 
 %% Macros comunes
 \newcommand{\hide}[1]{}
 \newcommand{\ra}{$\rightarrow${}~{}}
+
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX,Numbers=OldStyle}
+% \setmainfont{Aller_Lt.ttf}[
+% BoldFont = Aller_Rg.ttf,
+% ItalicFont = Aller_LtIt.ttf,
+% BoldItalicFont = Aller_It.ttf]
+\setsansfont
+  [Ligatures=TeX, % recommended
+   UprightFont={* Light},
+   ItalicFont={* Light Italic},
+   BoldFont={*},
+   BoldItalicFont={* Italic}]
+  {Open Sans}
+% \setsansfont
+%   [Ligatures=TeX, % recommended
+%    UprightFont={* Regular},
+%    ItalicFont={* Italic}]
+%   {Fira Sans}
+%\setmainfont{Open Sans}[BoldFont={* Bold}]
+% \setmonofont[Ligatures = TeX,
+% UprightFont={* Light},
+%    ItalicFont={* Light Italic},
+%    BoldFont={* Medium},
+%    BoldItalicFont={* Medium Italic}]{Input Mono}
+
+%\setmonofont{Input Mono}
+\setmonofont%[Scale=1.1]
+ % [Ligatures=TeX, % recommended
+ %  UprightFont={* Regular},
+ %  ItalicFont={* Italic},
+ %  BoldFont={* Bold},
+ %  BoldItalicFont={* Bold Italic}]
+{Fira Mono}
+
+\setbeamercolor{block title}{bg=blue!30,fg=black}
+\setbeamercolor{block body}{bg=blue!10,fg=black}
+\setbeamercolor{block title alerted}{bg=red!30,fg=black}
+\setbeamercolor{block body alerted}{bg=red!10,fg=black}
+
+\newsavebox{\mysubpic}
+
+\usebackgroundtemplate{
+%\setbox{\mysubpic}{
+  \sbox{\mysubpic}{%
+    \begin{tikzpicture}[remember picture,line width=2em,blue!30] %sub-picture
+      \foreach \s in {1,...,\value{framenumber}}{
+        \tikzmath{
+          int \shift;
+          \shift = (\s * 3);
+          if Mod(\s,5) > 0 then {
+            { \draw[xshift=\shift em] (0,0) -- (0,10em); };
+          } else {
+            { \draw[xshift=\shift em] (-1em,7em) -- (-14em,2em); };
+          };
+       }
+      }
+    \end{tikzpicture}% needed, otherwise anchors are wrong!
+  }
+
+  \begin{tikzpicture}[remember picture,overlay,line width=2em]
+    %\node[opacity=0.3, at=(current page.south east),anchor=south east,inner sep=0pt] {
+%    \includegraphics[height=\paperheight,width=\paperwidth]{image}};
+    \coordinate[at=(current page.north west)] (ul);
+    \coordinate[at=(current page.south west)] (sw);
+    \coordinate[at=(current page.south east)] (lr);
+%    \path (ul) -- (lr) node[opacity=0.3,midway,anchor=center]{\usebox{\mysubpic}};
+    \path (sw) -- (lr) node[opacity=.7,pos=.99,anchor=south east,scale=.1]{\usebox{\mysubpic}};
+  \end{tikzpicture}
+}
 
 
 %----------------------------------------------------------------------------------------
@@ -474,7 +584,7 @@ una buena opción $\Rightarrow$ {\bf polyglot persistence}
 
 \begin{frame}[fragile]
   \frametitle{CV como un documento}
-\begin{lstlisting}[basicstyle=\Tiny\tt]
+\begin{lstlisting}[language=json,basicstyle=\tiny\tt]
 {
   "user_id": 251,
   "first_name": "Bill",

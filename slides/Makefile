@@ -16,7 +16,7 @@ slides-dir: $(TARGETS)
 define pdfrule
 $(1).pdf: $(1).tex
 	test -e $$(DEPS_DIR) || mkdir $$(DEPS_DIR)
-	$$(LATEXMK) -pdf -dvi- -ps- -deps-out=$$(DEPS_DIR)/$$@P $$<
+	$$(LATEXMK) -xelatex -dvi- -ps- -deps-out=$$(DEPS_DIR)/$$@P $$<
 	sed -i -e '/\.out\\$$//d;/^[ ]\+\/usr\//d;/^[ ]\+\/var\//d' $$(DEPS_DIR)/$$@P
 endef
 
