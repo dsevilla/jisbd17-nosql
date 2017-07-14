@@ -1,3 +1,12 @@
+from IPython.display import Image
+from pprint import pprint as pp
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib
+
+%matplotlib inline
+matplotlib.style.use('ggplot')
+
 slidedir = "slides/slides-dir"
 
 # Display slide
@@ -34,8 +43,10 @@ import math
 
 font = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 150)
 
-
 def say(string):
+    if len(string) == 0:
+        return False
+    
     scale = 1.5
     fontsize = font.getsize(string) #The size of the image
     imgsize = [int(fontsize[0] * scale), int(fontsize[1] * scale)]
@@ -52,7 +63,7 @@ def say(string):
             distanceToCenter = math.sqrt((x) ** 2 + (y ) ** 2)
 
             #Make it on a scale from 0 to 1
-            distanceToCenter = float(distanceToCenter) / (math.sqrt(2) * imgsize[0])
+            distanceToCenter = float(distanceToCenter) / (1.4142 * imgsize[0])
 
             #Calculate r, g, and b values
             r = outerColor[0] * distanceToCenter + innerColor[0] * (1 - distanceToCenter)
