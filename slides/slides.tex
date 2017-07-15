@@ -472,6 +472,38 @@ slide = slides.find_one({'_id': 'slide000'})
 
 \section{Introducción a los sistemas NoSQL}
 
+\begin{frame}[allowframebreaks]
+  \frametitle{Introducción a NoSQL}
+\begin{itemize}
+\item {\bf NoSQL} incluye un conjunto de tecnologías relativamente dispares
+\item Aún así, {\bf características comunes}:
+  \begin{itemize}
+  \item No se basan en SQL
+  \item {\bf Escalabilidad}
+  \item Generalmente no obligan a definir un esquema ({\itshape\bfseries
+      schemaless})
+\item Surgidos de la comunidad para solucionar problemas, y muchas de
+  ellas son {\bf libres/{\itshape open source}}
+\item Diseño basado en procesamiento distribuido
+\item Aplican tecnologías funcionales como {\bf MapReduce}
+\end{itemize}
+\end{itemize}
+\framebreak
+
+
+  \begin{block}{Categorías de NoSQL}
+    \begin{itemize}
+    \item Bases de datos Key-Value
+    \item Bases de datos Documentales
+    \item Bases de datos columnares
+    \item Bases de datos de grafos
+    \item Bases de datos de arrays
+    \end{itemize}
+\end{block}
+
+\end{frame}
+
+
 \begin{frame}
   \frametitle{Evolución desde el modelo relacional}
 \begin{itemize}
@@ -1020,6 +1052,71 @@ Comment.path('name').set(function (v) {
 
 \end{frame}
 
+\subsection{Eficiencia {\em raw}}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Eficiencia {\em raw}}
+  \begin{itemize}
+  \item Pero los sistemas NoSQL tienen que competir también con los SQL en
+    términos de eficiencia neta (también llamada {\em raw})
+  \item Un pequeño test sintético nos puede ayudar a hacernos una idea
+    (fuente:
+    \url{http://bonesmoses.org/2016/07/15/pg-phriday-a-postgres-persepctive-on-mongodb/}
+  \item Estos resultados están también en la hoja del repositorio de la
+    asignatura
+    \url{https://github.com/dsevilla/bdge/blob/master/addendum/mysql_vs_mongo/perf_plot.ipynb}.
+
+\framebreak
+
+\item La prueba se realizó sobre MongoDB y sobre MySQL (se ha adaptado el
+  original, que era para PostgreSQL)
+\item Se parte de una tabla sencilla con cuatro valores, que muestran
+  medidas de sensores con localización, valor de la lectura y una marca de
+  tiempo
+  \item Se realizan seis pruebas que pueden corresponder a un conjunto de
+    consultas normales:
+\framebreak
+  \begin{enumerate}
+  \item Inicialmente se insertan un millón de elementos generados al azar,
+    con fechas que permitan la búsqueda por rango ({\bf Fill})
+  \item Se crea un índice en la tabla para la fecha de la lectura ({\bf
+      Index})
+  \item Se actualizan los valores de un conjunto de entradas seleccionadas
+    por rango de fechas ({\bf Update})
+  \item Se eliminan un conjunto de filas seleccionadas por rango de fechas
+    ({\bf Delete})
+  \item Se obtiene el número de filas restantes ({\bf Count})
+  \item Se obtiene un {\bf subconjunto} de filas extraído de una consulta
+    dada por un rango de fechas ({\bf Interval})
+  \end{enumerate}
+
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{img/mongo_vs_mysql}
+\end{center}
+
+
+\begin{itemize}
+\item El gráfico se muestra en escala logarítmica en el eje Y (las
+  diferencias pequeñas se acentúan)
+\item A simple vista, ambos productos están muy igualados
+  \begin{itemize}
+  \item SQL (MySQL) lleva {\em muchos años} de optimizaciones
+  \item Mientras que productos como MongoDB tienen menos historia a sus
+    espaldas en cuanto a optimizaciones, etc.
+  \end{itemize}
+\item Hay casos en los que uno es más rápido que el otro y viceversa
+\item No se puede decir cuál es mejor
+  \begin{itemize}
+  \item {\bf $\Rightarrow$ DEPENDE DEL PATRÓN DE ACCESOS QUE VAYA A TENER
+      NUESTRA APLICACIÓN}
+  \item (p. ej. contado en MongoDB mucho más rápido que en MySQL;
+    actualización algo más rápida)
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
 
 % \begin{frame}
 %   \frametitle{Map-Reduce}
@@ -1046,6 +1143,37 @@ Comment.path('name').set(function (v) {
 %   \end{itemize}
 %   \end{itemize}
 % \end{frame}
+
+\section{Tipos de Sistemas NoSQL}
+
+
+\subsection{Key-Value y Documentales}
+
+\begin{frame}
+  \frametitle{Key-Value Stores y Documentales}
+\vspace*{-.9em}
+\begin{itemize}
+\item Cada pieza de datos tiene asignado un identificador
+\item La diferencia entre ambas es que:
+  \begin{itemize}
+  \item En Key-Value, el valor es opaco, no se conoce nada de su interior
+    (a todos los efectos es un {\em blob\/} de datos)
+\item En las basadas en documentos, la base de datos puede ver el contenido
+  del agregado, y utilizar su información como parte de las búsquedas y
+  actualizaciones
+\end{itemize}
+\item Docs. $\Rightarrow$ formatos jerárquicos tipo JSON o XML
+\item La diferencia entre ambas queda un poco difusa
+  \begin{itemize}
+  \item Por ejemplo, Riak es Key-Value pero permite realizar búsquedas
+    indexadas parecidas a las de Solr/Lucene
+\item Redis permite que los valores de datos sean estructurados en arrays,
+  estructuras complejas, mapas
+  \end{itemize}
+\item Key-Value: Riak, Redis, Memcache, LevelDB
+\item Documentos: CouchDB, MongoDB, OrientDB
+\end{itemize}
+\end{frame}
 
 \subsection{Map-Reduce}
 
@@ -1175,127 +1303,6 @@ db.observations.aggregate([
 \end{frame}
 
 \end{document}
-
-\subsection{Eficiencia {\em raw}}
-
-\begin{frame}[allowframebreaks]
-  \frametitle{Eficiencia {\em raw}}
-  \begin{itemize}
-  \item Pero los sistemas NoSQL tienen que competir también con los SQL en
-    términos de eficiencia neta (también llamada {\em raw})
-  \item Un pequeño test sintético nos puede ayudar a hacernos una idea
-    (fuente:
-    \url{http://bonesmoses.org/2016/07/15/pg-phriday-a-postgres-persepctive-on-mongodb/}
-  \item Estos resultados están también en la hoja del repositorio de la
-    asignatura
-    \url{https://github.com/dsevilla/bdge/blob/master/addendum/mysql_vs_mongo/perf_plot.ipynb}.
-
-\framebreak
-
-\item La prueba se realizó sobre MongoDB y sobre MySQL (se ha adaptado el
-  original, que era para PostgreSQL)
-\item Se parte de una tabla sencilla con cuatro valores, que muestran
-  medidas de sensores con localización, valor de la lectura y una marca de
-  tiempo
-  \item Se realizan seis pruebas que pueden corresponder a un conjunto de
-    consultas normales:
-\framebreak
-  \begin{enumerate}
-  \item Inicialmente se insertan un millón de elementos generados al azar,
-    con fechas que permitan la búsqueda por rango ({\bf Fill})
-  \item Se crea un índice en la tabla para la fecha de la lectura ({\bf
-      Index})
-  \item Se actualizan los valores de un conjunto de entradas seleccionadas
-    por rango de fechas ({\bf Update})
-  \item Se eliminan un conjunto de filas seleccionadas por rango de fechas
-    ({\bf Delete})
-  \item Se obtiene el número de filas restantes ({\bf Count})
-  \item Se obtiene un {\bf subconjunto} de filas extraído de una consulta
-    dada por un rango de fechas ({\bf Interval})
-  \end{enumerate}
-
-\end{itemize}
-
-\begin{center}
-\includegraphics[width=.8\textwidth]{img/mongo_vs_mysql}
-\end{center}
-
-
-\begin{itemize}
-\item El gráfico se muestra en escala logarítmica en el eje Y (las
-  diferencias pequeñas se acentúan)
-\item A simple vista, ambos productos están muy igualados
-  \begin{itemize}
-  \item SQL (MySQL) lleva {\em muchos años} de optimizaciones
-  \item Mientras que productos como MongoDB tienen menos historia a sus
-    espaldas en cuanto a optimizaciones, etc.
-  \end{itemize}
-\item Hay casos en los que uno es más rápido que el otro y viceversa
-\item No se puede decir cuál es mejor
-  \begin{itemize}
-  \item {\bf $\Rightarrow$ DEPENDE DEL PATRÓN DE ACCESOS QUE VAYA A TENER
-      NUESTRA APLICACIÓN}
-  \item (p. ej. contado en MongoDB mucho más rápido que en MySQL;
-    actualización algo más rápida)
-  \end{itemize}
-\end{itemize}
-
-
-\end{frame}
-
-
-\section{Tipos de Sistemas NoSQL}
-
-\begin{frame}
-  \frametitle{Tipos de Sistemas NoSQL}
-\begin{itemize}
-\item {\bf NoSQL} incluye un conjunto de tecnologías relativamente dispares
-\item Aún así, la mayoría comparten una serie de características:
-  \begin{itemize}
-  \item No se basan en SQL
-\item Generalmente no obligan a definir un esquema
-\item Han surgido de la comunidad para solucionar problemas, y muchas de
-  ellas son libres/open source
-\item Diseño basado en procesamiento distribuido, y aplican tecnologías
-  funcionales como MapReduce
-  \end{itemize}
-\item Divididas en subcategorías:
-  \begin{itemize}
-  \item Bases de datos Key-Value y Documentales
-\item Bases de datos columnares
-\item Bases de datos de grafos
-\item Bases de datos de arrays
-  \end{itemize}
-\end{itemize}
-\end{frame}
-
-\subsection{Key-Value y Documentales}
-
-\begin{frame}
-  \frametitle{Key-Value Stores y Documentales}
-\vspace*{-.9em}
-\begin{itemize}
-\item Cada pieza de datos tiene asignado un identificador
-\item La diferencia entre ambas es que:
-  \begin{itemize}
-  \item En Key-Value, el valor es opaco, no se conoce nada de su interior
-    (a todos los efectos es un {\em blob\/} de datos)
-\item En las basadas en documentos, la base de datos puede ver el contenido
-  del agregado, y utilizar su información como parte de las búsquedas y
-  actualizaciones
-\end{itemize}
-\item Docs. $\Rightarrow$ formatos jerárquicos tipo JSON o XML
-\item La diferencia entre ambas queda un poco difusa
-  \begin{itemize}
-  \item Por ejemplo, Riak es Key-Value pero permite realizar búsquedas
-    indexadas parecidas a las de Solr/Lucene
-\item Redis permite que los valores de datos sean estructurados en arrays,
-  estructuras complejas, mapas
-  \end{itemize}
-\item Key-Value: Riak, Redis, Memcache, LevelDB
-\item Documentos: CouchDB, MongoDB, OrientDB
-\end{itemize}
-\end{frame}
 
 
 \subsection{Bases de Datos Columnares}
