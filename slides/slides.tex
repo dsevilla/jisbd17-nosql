@@ -396,8 +396,71 @@ for file in files:
               True)
 \end{lstlisting}
 
+  \framebreak
+
+\item Se añaden características a los {\em slides}
+\item En el segundo bucle se {\bf actualiza} {\tt image}
+\end{itemize}
+
+\begin{alertblock}{¿Y el modelado de datos?}
+\end{alertblock}
+
+\framebreak
+
+\centering\includegraphics[width=.9\textwidth]{img/slides-data-model}
+
+\framebreak
+
+\begin{itemize}
+\item OK, pensemos en {\bf relacional}
+  \begin{itemize}
+  \item \lstinline[language=sql]{CREATE TABLE ...}
+  \item ¿Cuántas tablas?
+  \item Claves ajenas, restricciones de integridad...
+  \item {\bf Gap semántico}:
+    \begin{itemize}
+    \item La tabla {\tt Reference} no está contenida {\bf sino enlazada}
+      (por clave ajena)
+    \item O bien se crea la tabla {\tt Slide\_Reference}
+    \item {\bf ID Artificial} para referencias
+    \item Se tiene que crear la tabla {\tt Slide\_xref}
+    \end{itemize}
   \end{itemize}
+
+\end{itemize}
+
+\begin{block}{El modelo de documentos es {\bf más natural en este caso}}
+\end{block}
+
+\framebreak
+
+\begin{alertblock}{¿Y toda la información de diapositiva?}
+\begin{itemize}
+\begin{lstlisting}[language=sql]
+SELECT * FROM Slides WHERE `_id` = 'slide000';
+\end{lstlisting}
+  \item ¿{\tt xref}? ¿{\tt references}?
+\begin{lstlisting}[language=sql]
+SELECT * FROM Slides s
+  JOIN References r ON `s._id` = r.slide_id
+  JOIN Slide_xref x ON `s._id` = x.slide_id
+WHERE `s._id` = 'slide000';
+\end{lstlisting}
+\item Filas con {\bf ¡¡información replicada!!}
+\item ¿Y si se añade más información a {\tt Slide}?
+  \end{itemize}
+\end{alertblock}
+
+\framebreak
+
+\begin{block}{MongoDB}
+\begin{lstlisting}[language=Python]
+slide = slides.find_one({'_id': 'slide000'})
+\end{lstlisting}
+\end{block}
+
 \end{frame}
+
 
 \end{document}
 
