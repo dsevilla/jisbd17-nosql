@@ -301,14 +301,17 @@ Universidad de Murcia\\
 % \tableofcontents[]
 % \end{frame}
 
-\begin{frame}[plain]
-%  \frametitle{¿Qué veremos aquí?}
+\begin{frame}[allowframebreaks]
+  \frametitle{¿Qué veremos aquí?}
   \begin{block}{¿Qué es NoSQL?}
   \end{block}
   \begin{block}{¿Por qué NoSQL?}
   \end{block}
   \begin{block}{Introducción a NoSQL y modelado}
   \end{block}
+  \begin{block}{Desventajas de NoSQL}
+  \end{block}
+\framebreak
   \begin{block}{Tipos de BBDD NoSQL}
     \begin{itemize}
     \item Key/Value
@@ -316,6 +319,10 @@ Universidad de Murcia\\
     \item Columnares ({\em wide column})
     \item Grafos
     \end{itemize}
+  \end{block}
+  \begin{block}{Academia y NoSQL}
+  \end{block}
+  \begin{block}{NewSQL}
   \end{block}
 \end{frame}
 
@@ -462,8 +469,6 @@ slide = slides.find_one({'_id': 'slide000'})
 
 \end{frame}
 
-
-\end{document}
 
 \section{Introducción a los sistemas NoSQL}
 
@@ -1044,16 +1049,25 @@ Comment.path('name').set(function (v) {
 
 \subsection{Map-Reduce}
 
-\begin{frame}
+\begin{frame}[allowframebreaks,fragile]
 \frametitle{Map-Reduce}
 \begin{itemize}
-\item Map-Reduce: origen en {\bf lenguajes funcionales}:
+\item Origen en {\bf lenguajes funcionales}:
 \begin{itemize}
 \item {\tt map()}: Ejecuta una misma función sobre todos los elementos de
   un conjunto
-\item {\tt reduce()}: Sumariza un conjunto de valores para producir un
+\begin{lstlisting}[language=haskell]
+map :: (a -> b) -> [a] -> [b]
+\end{lstlisting}
+\item {\tt reduce()}: Procesa un conjunto de valores para producir un
   valor de salida
+\begin{lstlisting}[language=haskell]
+foldl :: (a -> b -> a) -> a -> [b] -> a
+\end{lstlisting}
 \end{itemize}
+
+\framebreak
+
 \item Map-Reduce combina ambas operaciones:
 \begin{itemize}
 \item Una misma operación {\tt map()} a cada dato residente en un nodo es
@@ -1066,31 +1080,28 @@ Comment.path('name').set(function (v) {
   procesamientos {\bf en cadena}
 \end{itemize}
 \end{itemize}
-\end{frame}
 
-\begin{frame}
-  \frametitle{Map-Reduce}
+\framebreak
+
 \centering\includegraphics[width=.9\textwidth]{img/mapreduce1}
-\end{frame}
 
-\begin{frame}
-  \frametitle{Map-Reduce -- Word Count}
-\framesubtitle{\url{http://www.milanor.net/blog/an-example-of-mapreduce-with-rmr2/}}
+\framebreak
+
+(de \url{http://www.milanor.net/blog/an-example-of-mapreduce-with-rmr2/})
 \centering\includegraphics[width=\textwidth]{img/MapReduceWordcount}
 \end{frame}
 
 \begin{frame}
 \frametitle{Map-Reduce}
 \begin{itemize}
-\item Map-Reduce en entornos Big-Data/NoSQL tiene una serie de
-  particularidades:
+\item Map-Reduce en entornos Big-Data/NoSQL
   \begin{itemize}
-  \item Se supone que los datos de entrada son siempre pares $<key,value>$
+  \item Entrada \ra{} siempre pares $<key,value>$
 
-  \item La función {\tt map()} produce otro conjunto de valores
+  \item {\tt map()} produce otro conjunto de valores
     $\{<key1,value1>,<key2,value2>,...\}$
 
-\item El {\em shuffle} agrupa los valores con la misma clave:
+\item {\em Shuffle} agrupa los valores con la misma clave:
 \begin{displaymath}
 \{<key1,\{val1,val3,...\}>,<key2,\{val2,val4,...\}>,...\}
 \end{displaymath}
@@ -1101,12 +1112,11 @@ Comment.path('name').set(function (v) {
 \item Hay procesamientos difíciles de expresar en Map-Reduce $\Rightarrow$
   varias operaciones M/R {\bf en cadena}
   \end{itemize}
-\item Se verá en profundidad en los siguientes temas de la asignatura
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}[fragile]
+\begin{frame}[fragile,allowframebreaks]
   \frametitle{Map-Reduce y Consultas}
 \begin{itemize}
 \item Map-Reduce puede usarse no sólo para computación distribuida, sino
@@ -1121,15 +1131,11 @@ FROM observations
 WHERE family = 'Sharks'
 GROUP BY observation_month;
 \end{lstlisting}
-  \end{itemize}
-\end{frame}
 
-\begin{frame}[fragile]
-  \frametitle{Map-Reduce y Consultas (ii)}
-  \begin{itemize}
+  \framebreak
+
 \item MongoDB con el API de MapReduce:
-  \end{itemize}
-\begin{lstlisting}[basicstyle=\footnotesize\tt]
+\begin{lstlisting}[language=Javascript,basicstyle=\footnotesize\tt]
 db.observations.mapReduce(
   function map() {
     var year = this.observationTimestamp.getFullYear();
@@ -1145,14 +1151,10 @@ db.observations.mapReduce(
   }
 );
 \end{lstlisting}
-\end{frame}
 
+\item  MongoDB ofrece además un API alternativo para funciones de agregación:
 
-\begin{frame}[fragile]
-  \frametitle{Map-Reduce y Consultas (iii)}
-  MongoDB ofrece además un API alternativo para funciones de agregación:
-
-\begin{lstlisting}
+\begin{lstlisting}[language=Javascript,basicstyle=\footnotesize\tt]
 db.observations.aggregate([
   { $match: { family: "Sharks" } },
   { $group: {
@@ -1165,11 +1167,14 @@ db.observations.aggregate([
   }
 ]);
 \end{lstlisting}
+\end{itemize}
 \end{frame}
 
 \begin{frame}[plain]
   \includegraphics[width=\textwidth]{img/sql-to-mongodb}
 \end{frame}
+
+\end{document}
 
 \subsection{Eficiencia {\em raw}}
 
