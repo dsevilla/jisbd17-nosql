@@ -207,15 +207,15 @@ morestring=[b]"
 \usebackgroundtemplate{
 %\setbox{\mysubpic}{
   \sbox{\mysubpic}{%
-    \begin{tikzpicture}[remember picture,line width=2em,blue!30] %sub-picture
+    \begin{tikzpicture}[remember picture,line width=1em,blue!30] %sub-picture
       \foreach \s in {1,...,\value{framenumber}}{
         \tikzmath{
           int \shift;
-          \shift = (\s * 3);
+          \shift = (\s * 2);
           if Mod(\s,5) > 0 then {
-            { \draw[xshift=\shift em] (0,0) -- (0,10em); };
+            { \draw[xshift=\shift em] (0,0) -- (0,5em); };
           } else {
-            { \draw[xshift=\shift em] (-1em,7em) -- (-14em,2em); };
+            { \draw[xshift=\shift em] (-.5em,3em) -- (-9.5em,1em); };
           };
        }
       }
@@ -489,13 +489,13 @@ slide = slides.find_one({'_id': 'slide000'})
   que se han clasificado en varios tipos (las veremos después),
   caracterizadas por {\bf no usar SQL} como modelo de datos
 \item {\bf NoSQL} \ra{} {\bfseries\itshape Not Only SQL} (no sólo SQL)
-\item Big Data \ra{} hay una variedad de fuentes de datos ({\bf persistencia
-    polígota})
+% \item Big Data \ra{} hay una variedad de fuentes de datos ({\bf persistencia
+%     polígota})
   \end{itemize}
 \end{frame}
 
 \begin{frame}[allowframebreaks]
-\frametitle{Cambio a NoSQL -- ¿Por qué?}
+  \frametitle{NoSQL -- ¿Por qué se plantearon?}
 %En general, el desarrollo de NoSQL ha venido motivado, entre otras, por una
 %serie de circunstancias:
 \begin{enumerate}
@@ -510,24 +510,35 @@ slide = slides.find_one({'_id': 'slide000'})
 \item {\bf Consultas especializadas} no eficientes en el modelo relacional
   (JOINs)
 \item {\bf Expresividad, flexibilidad, dinamismo}. Frustración con {\bf
-    restricciones} del modelo relacional \ra{} ({\bfseries\itshape
-    schemaless})
-\item Paradigma {\bf funcional}: {\em Map-Reduce}
+    restricciones} del modelo relacional
+  % \ra{} ({\bfseries\itshape schemaless})
+%\item Paradigma {\bf funcional}: {\em Map-Reduce}
 \end{enumerate}
 
 \framebreak
 
-\begin{alertblock}{Sin embargo...}
-\begin{small}
-Hay que elegir la herramienta correcta para cada aplicación, y SQL puede ser
-una buena opción $\Rightarrow$ {\bf polyglot persistence}
-\end{small}
-\end{alertblock}
+\includegraphics[width=\textwidth]{img/data-growth}
+
 \end{frame}
 
-\begin{frame}
-  \frametitle{Introducción a NoSQL}
-  \begin{block}{Categorías de NoSQL}
+
+\begin{frame}[allowframebreaks]
+ \frametitle{NoSQL: Características}
+\begin{itemize}
+\item No se basan en SQL
+\item Modelos de datos más ricos
+\item Orientadas a la {\bf Escalabilidad}
+\item Generalmente no obligan a definir un esquema \ra{}
+  {\itshape\bfseries Schemaless}
+\item Surgidos de la comunidad para solucionar problemas, y muchas de
+  ellas son {\bf libres/{\itshape open source}}
+\item Diseño basado en {\bf procesamiento distribuido}
+\item Principios funcionales \ra{} {\bf MapReduce}
+\end{itemize}
+
+\framebreak
+
+\begin{block}{Categorías de NoSQL}
     \begin{itemize}
     \item Bases de datos Key-Value
     \item Bases de datos Documentales
@@ -538,13 +549,30 @@ una buena opción $\Rightarrow$ {\bf polyglot persistence}
 \end{block}
 \end{frame}
 
+\begin{frame}
+  \frametitle{¡Pero cuidado!}
+\begin{columns}
+\begin{column}{.5\textwidth}
+  \includegraphics[height=.7\textheight]{img/chose-wisely}
+\end{column}
+\begin{column}{.5\textwidth}
+\begin{alertblock}{SQL}
+\end{alertblock}
+\begin{alertblock}{NoSQL}
+\end{alertblock}
+\begin{alertblock}{Polyglot Persistence}
+\end{alertblock}
+\end{column}
+\end{columns}
+\end{frame}
+
 
 \begin{frame}
   \frametitle{Evolución desde el modelo relacional}
 \begin{itemize}
 \item El {\bf modelo relacional} $\Rightarrow$ {\bf predominante en los
-  últimos~30~años}
-\item Tiene raíces en el denominado {\em business data processing},
+  últimos~\~{}30~años}
+\item Tiene sus raíces en el denominado {\em business data processing},
   procesamiento de transacciones y {\em batch}
 \item Propuesto por Codd en los~70, {\bf de alto nivel}
 \item Actualmente los {\bf sistemas SQL están muy optimizados}:
@@ -560,27 +588,27 @@ una buena opción $\Rightarrow$ {\bf polyglot persistence}
 
 
 \begin{frame}
-  \frametitle{Cambio a NoSQL}
+  \frametitle{Adopción de NoSQL}
 Twitter cambiando a Cassandra por~2010\\
 Cassandra desarrollada en Facebook en~2009\\
 \includegraphics[width=\textwidth]{img/twitter-cassandra}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Cambio a NoSQL. Ranking julio 2017}
+  \frametitle{Adopción NoSQL. Ranking julio 2017}
 \framesubtitle{Fuente: \url{http://db-engines.com/en/ranking/}}
 \vspace*{.1ex}
 \centering\includegraphics[width=.8\textwidth]{img/ranking-bbdd}
 \end{frame}
 
 \begin{frame}
-\frametitle{Cambio a NoSQL.Tendencia julio 2017}
+\frametitle{Adopción NoSQL.Tendencia julio 2017}
 \framesubtitle{Fuente: \url{http://db-engines.com/en/ranking/}}
 \includegraphics[width=\textwidth]{img/nosql-database-ranking}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Cambio a NoSQL -- Análisis}
+  \frametitle{Adopción NoSQL. Análisis}
 \begin{alertblock}{Análisis}
 \begin{itemize}
 \item Dominan los grandes SGBDR
@@ -637,29 +665,35 @@ Cassandra desarrollada en Facebook en~2009\\
     \begin{itemize}
     \item Desde los 90's: Clústers/NOC/COW: procesamiento masivamente
       paralelo
-\end{itemize}
 \begin{center}
 {\color{red}SIN EMBARGO...}
 \end{center}
-\begin{itemize}
-\item El almacenamiento no se consideraba distribuido
-\item Ahora los nodos$\Rightarrow$ también para {\bf almacenamiento}
-\item Se intenta minimizar el verdadero cuello de botella: {\bf trasiego de
+\item Almacenamiento no distribuido
+\item Ahora los nodos $\Rightarrow$ también {\bf almacenamiento}
+\item Minimizar el verdadero cuello de botella: {\bf trasiego de
     información por la red}
     \end{itemize}
 
   \end{block}%
 }%
 \only<3>{
-\vspace*{-13em}
+\vspace*{-10em}
 \begin{block}{Procesamiento distribuido}
 \begin{itemize}
-\item Necesidad de {\bf paralelización máxima} y {\bf escalabilidad}
-\item Explotación máxima de la {\bf localidad de los datos}:
+\item Necesidad de {\bf paralelización máxima}
+\item {\bf Escalabilidad}
+\item Explotación de la {\bf localidad de los datos}:
   \begin{itemize}
   \item Datos producidos se utilizan en siguientes iteraciones
 \item Datos recibidos directamente (clientes simultáneos)
-  \end{itemize}
+\end{itemize}
+\end{itemize}
+\end{block}
+}%
+\only<4>{
+\vspace*{-9em}
+\begin{block}{Procesamiento distribuido}
+\begin{itemize}
 \item Vuelta al modelo funcional inherentemente paralelo: (i.e. {\bf
     Map-Reduce})
 \item Almacenamiento distribuido: (i.e. {\bf HDFS})
@@ -667,36 +701,32 @@ Cassandra desarrollada en Facebook en~2009\\
 \end{itemize}
 \end{block}%
 }%
-\only<4>{
-\vspace*{-11em}
+\only<5>{
+\vspace*{-13em}
 \begin{block}{Modelo de datos}
 \begin{itemize}
   \item El modelo relacional limita a tablas con valores primitivos y
     relaciones {\em Primary Key\/}/{\em Foreign Key}
   \item Pero en programación se utilizan {\bf listas}, {\bf arrays}, {\bf
       tipos de datos compuestos} ({\color{red}{\em gap\/} semántico})
-  \item Además, la consistencia ACID es {\bf muy compleja y costosa} en
-    ambientes distribuidos (quizá {\bf no necesaria} para algunas
-    aplicaciones)
+  \item ACID es {\bf muy compleja y costosa} en ambientes distribuidos
+    (quizá {\bf no necesaria} en algunas aplicaciones)
 \end{itemize}
 \end{block}%
 }%
-\only<5>{
-\vspace*{-13em}
+\only<6>{
+\vspace*{-11em}
 \begin{block}{Modelo de datos (ii)}
 \begin{itemize}
-\item ¿Y si se pudieran ver como un {\bf GRAN ARRAY}?
+\item ¿Si se pudiera ver como un {\bf GRAN ARRAY}?
 \begin{itemize}
 \item Cada nodo almacenaría una parte del array
 \item Búsqueda aleatoria {\bf muy rápida} (árboles B)
-\item Búsquedas secuenciales pueden descartar nodos completos sin
-  información relevante ({\bf filtros de Bloom})
+\item Uso de {\bf filtros de Bloom}
 \item Uso de {\bf objetos complejos} (p. ej. {\bf documentos JSON}),
   para mantener la {\bf localidad espacial de datos relacionados} (+
   después)
-\item Minimización de la necesidad de transacciones: el objeto complejo es
-  la unidad de {\bfseries\itshape modificación atómica}
-\item Procesamiento masivamente paralelo: {\bf Map-Reduce}
+\item Transacciones limitadas al {\bf objeto complejo}
 \end{itemize}
 \end{itemize}
 \end{block}%
