@@ -1076,17 +1076,14 @@ Comment.path('name').set(function (v) {
   \begin{itemize}
   \item Pero los sistemas NoSQL tienen que competir también con los SQL en
     términos de eficiencia neta (también llamada {\em raw})
-  \item Un pequeño test sintético nos puede ayudar a hacernos una idea
-    (fuente:
-    \url{http://bonesmoses.org/2016/07/15/pg-phriday-a-postgres-persepctive-on-mongodb/}
-  \item Estos resultados están también en la hoja del repositorio de la
-    asignatura
-    \url{https://github.com/dsevilla/bdge/blob/master/addendum/mysql_vs_mongo/perf_plot.ipynb}.
-
-\framebreak
+  \item Un pequeño test sintético nos puede ayudar a hacernos una
+    idea\footnote{\url{http://bonesmoses.org/2016/07/15/pg-phriday-a-postgres-persepctive-on-mongodb/}.}
 
 \item La prueba se realizó sobre MongoDB y sobre MySQL (se ha adaptado el
   original, que era para PostgreSQL)
+
+  \framebreak
+
 \item Se parte de una tabla sencilla con cuatro valores, que muestran
   medidas de sensores con localización, valor de la lectura y una marca de
   tiempo
@@ -1094,8 +1091,8 @@ Comment.path('name').set(function (v) {
     consultas normales:
 \framebreak
   \begin{enumerate}
-  \item Inicialmente se insertan un millón de elementos generados al azar,
-    con fechas que permitan la búsqueda por rango ({\bf Fill})
+  \item Inicialmente se insertan {\bf un millón} de elementos generados al
+    azar, con fechas que permitan la búsqueda por rango ({\bf Fill})
   \item Se crea un índice en la tabla para la fecha de la lectura ({\bf
       Index})
   \item Se actualizan los valores de un conjunto de entradas seleccionadas
@@ -1110,7 +1107,7 @@ Comment.path('name').set(function (v) {
 \end{itemize}
 
 \begin{center}
-\includegraphics[width=.8\textwidth]{img/mongo_vs_mysql}
+\includegraphics[width=.9\textwidth]{img/mongo_vs_mysql}
 \end{center}
 
 
