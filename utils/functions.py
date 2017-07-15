@@ -42,8 +42,15 @@ from PIL import ImageDraw
 import math
 
 font = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 150)
+fontEmoji = ImageFont.truetype("fonts/OpenSansEmoji.ttf", 150)
+
+def sayEmoji(string):
+    return say_(string, fontEmoji)
 
 def say(string):
+    return say_(string, font)
+
+def say_(string, font):
     if len(string) == 0:
         return False
     

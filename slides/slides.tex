@@ -92,6 +92,7 @@ frame=tblr, % single, tb, ltrb % boxed listings, en mayusculas = doble linea
 framerule=0pt,
 tabsize=4, % tabulador = 2 espacios
 captionpos=b,
+backgroundcolor=\color{yellow!20},
 breaklines=true,
 %backgroundcolor=\color{white},
 %numbers=left, numberstyle=\tiny, stepnumber=2, numbersep=10pt,
@@ -197,9 +198,9 @@ morestring=[b]"
 {Fira Mono}
 
 \setbeamercolor{block title}{bg=blue!30,fg=black}
-\setbeamercolor{block body}{bg=blue!10,fg=black}
+\setbeamercolor{block body}{bg=blue!20,fg=black}
 \setbeamercolor{block title alerted}{bg=red!30,fg=black}
-\setbeamercolor{block body alerted}{bg=red!10,fg=black}
+\setbeamercolor{block body alerted}{bg=red!20,fg=black}
 
 \newsavebox{\mysubpic}
 
@@ -246,9 +247,9 @@ Dpto. Ingeniería y Tecnología de Computadores\\
 Facultad de Informática\\
 Universidad de Murcia\\
 \medskip
-\href{mailto:dsevilla@um.es}{\textit{dsevilla@um.es}}
+\href{mailto:dsevilla@um.es}{\texttt{dsevilla@um.es}}
 }
-\date{2017}
+\date{Julio de 2017}
 
 \makeatletter
 \patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip1em}{}{}
@@ -273,30 +274,132 @@ Universidad de Murcia\\
 
 %\def\insertsubsectionnumber{\arabic{subsection}}
 
-\AtBeginSection[]{
-  \begin{frame}<beamer>
-    \frametitle{\insertsubsection}
+% \AtBeginSection[]{
+%   \begin{frame}<beamer>
+%     \frametitle{\insertsubsection}
 
-    \tableofcontents[currentsection]
-  \end{frame}
-}
-\AtBeginSubsection[]{
-  \begin{frame}<beamer>
-    \frametitle{\insertsubsection}
+%     \tableofcontents[currentsection]
+%   \end{frame}
+% }
+% \AtBeginSubsection[]{
+%   \begin{frame}<beamer>
+%     \frametitle{\insertsubsection}
 
-    \tableofcontents[currentsection,currentsubsection]
-  \end{frame}
-}
+%     \tableofcontents[currentsection,currentsubsection]
+%   \end{frame}
+% }
 
 \begin{frame}
 \titlepage % Print the title page as the first slide
 \end{frame}
 
 
-\begin{frame}
-\frametitle{Índice}
-\tableofcontents[]
+% \begin{frame}
+% \frametitle{Índice}
+% \tableofcontents[]
+% \end{frame}
+
+\begin{frame}[plain]
+%  \frametitle{¿Qué veremos aquí?}
+  \begin{block}{¿Qué es NoSQL?}
+  \end{block}
+  \begin{block}{¿Por qué NoSQL?}
+  \end{block}
+  \begin{block}{Introducción a NoSQL y modelado}
+  \end{block}
+  \begin{block}{Tipos de BBDD NoSQL}
+    \begin{itemize}
+    \item Key/Value
+    \item Documentos
+    \item Columnares ({\em wide column})
+    \item Grafos
+    \end{itemize}
+  \end{block}
 \end{frame}
+
+\begin{frame}
+  \frametitle{¿Qué {\em NO\/} veremos aquí?}
+  \begin{alertblock}{SQL vs. NoSQL}
+    Al menos no una batalla
+  \end{alertblock}
+  \begin{alertblock}{Tecnologías en profundidad}
+    Por falta de tiempo
+  \end{alertblock}
+  \begin{alertblock}{Cuestiones avanzadas}
+    Replicación, seguridad, etc.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile,allowframebreaks]
+  \frametitle{Pero antes, un inciso}
+  \begin{itemize}
+  \item Imaginemos que quiero hacer una BBDD de estas diapositivas
+  \item Imaginemos que uso NoSQL:
+\begin{lstlisting}[language=bash]
+$ docker pull mongo
+$ docker run --rm -d --name mongo -p 27017:27017 mongo
+\end{lstlisting}
+  \item Imaginemos que uso Python
+
+    \framebreak
+
+  \item Quiero crear la base de datos ``{\tt slides}'' y la colección
+    ``{\tt slides}''
+\begin{lstlisting}[language=python]
+import pymongo
+from pymongo import MongoClient
+client = MongoClient("localhost", 27017)
+\end{lstlisting}
+
+\begin{lstlisting}[language=python]
+db = client.slides
+slides = db.slides  # colección slides
+\end{lstlisting}
+
+    \framebreak
+
+\item Datos para una diapositiva:
+
+\begin{lstlisting}[language=python]
+slides.insert_one(
+  {'_id': 'slide000',
+   'title': 'blah',
+   'image': None,
+   'references':
+        [{'type': 'web',
+          'ref': 'http://nosql-database.org'},
+         {'type' : 'book',
+          'ref': 'Sadalage, Fowler. NoSQL Distilled, 2009'}
+        ],
+   'crossref': ['slide010', 'slide002'],
+   'links': ['slide020', 'slide040'],
+   'notes': 'blah blah'
+  })
+\end{lstlisting}
+
+\framebreak
+
+\item ¡Las imágenes!
+
+\begin{lstlisting}[language=python]
+import os
+import glob
+files = glob.glob('slides/slides-dir/*.jpg')
+for file in files:
+    img = load_img(file)
+    img_to_thumbnail(img)
+    slidename = os.path.basename(
+                  os.path.splitext(file)[0])
+    slides.update_one(
+              {'_id': slidename},
+              {'$set' : {'image': img_to_base64(img)}},
+              True)
+\end{lstlisting}
+
+  \end{itemize}
+\end{frame}
+
+\end{document}
 
 \section{Introducción a los sistemas NoSQL}
 
@@ -330,8 +433,8 @@ Cassandra desarrollada en Facebook en~2009\\
 \begin{frame}
   \frametitle{Cambio a NoSQL. Ranking julio 2017}
 \framesubtitle{Fuente: \url{http://db-engines.com/en/ranking/}}
-\vspace*{-.8ex}
-\centering\includegraphics[width=.85\textwidth]{img/ranking-bbdd}
+\vspace*{.1ex}
+\centering\includegraphics[width=.8\textwidth]{img/ranking-bbdd}
 \end{frame}
 
 \begin{frame}
