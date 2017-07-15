@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
-    modelDirectory="/es.um.nosql.jisbd17/src" modelPluginID="es.um.nosql.jisbd17"
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/es.um.nosql.jisbd17/src" modelPluginID="es.um.nosql.jisbd17"
     modelName="Jisbd17" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
     importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
     operationReflection="true" importOrganizing="true">
   <foreignModel>jisbd17.ecore</foreignModel>
-  <genPackages prefix="Jisbd17" disposableProviderFactory="true" ecorePackage="jisbd17.ecore#/"/>
+  <genPackages prefix="Jisbd17" disposableProviderFactory="true" ecorePackage="jisbd17.ecore#/">
+    <genClasses ecoreClass="jisbd17.ecore#//Slide">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jisbd17.ecore#//Slide/references"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jisbd17.ecore#//Slide/_id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jisbd17.ecore#//Slide/title"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jisbd17.ecore#//Slide/image"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jisbd17.ecore#//Slide/notes"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference jisbd17.ecore#//Slide/xref"/>
+    </genClasses>
+    <genClasses ecoreClass="jisbd17.ecore#//Reference">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jisbd17.ecore#//Reference/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jisbd17.ecore#//Reference/ref"/>
+    </genClasses>
+    <genClasses ecoreClass="jisbd17.ecore#//Presentation">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jisbd17.ecore#//Presentation/slides"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jisbd17.ecore#//Presentation/name"/>
+    </genClasses>
+  </genPackages>
 </genmodel:GenModel>
