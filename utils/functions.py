@@ -9,10 +9,11 @@ matplotlib.style.use('ggplot')
 
 slidedir = "slides/slides-dir"
 
-# Display slide
-def ds(number):
-    display(Image('{}/slide{:03d}.png'.format(slidedir, number)))  
-
+# Display slides
+def ds(number, nslides=1):
+    for i in range(0,nslides):
+        display(Image('{}/slide{:03d}.png'.format(slidedir, number+i)))  
+    
 # Image to Base64
 import base64
 import cStringIO
@@ -22,7 +23,7 @@ def load_img(path):
     return PImage.open(path)
 
 def img_to_thumbnail(img):
-    img.thumbnail((512,512))
+    img.thumbnail((512,512),PImage.ANTIALIAS)
 
 def imgfile_to_base64(path):
     image = load_img(path)
@@ -30,7 +31,7 @@ def imgfile_to_base64(path):
 
 def img_to_base64(image):
     buffer = cStringIO.StringIO()
-    image.save(buffer, format="PNG")
+    image.save(buffer, format="JPEG")
     return base64.b64encode(buffer.getvalue())
 
 def img_from_base64(b64string):
@@ -43,6 +44,8 @@ import math
 
 font = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 150)
 fontEmoji = ImageFont.truetype("fonts/OpenSansEmoji.ttf", 150)
+font_small = ImageFont.truetype("fonts/DejaVuSans-Bold.ttf", 50)
+
 
 def sayEmoji(string):
     return say_(string, fontEmoji)
@@ -50,12 +53,28 @@ def sayEmoji(string):
 def say(string):
     return say_(string, font)
 
+yodaimg = PImage.open('images/yoda.jpg')
+scale=1.5
+
+def yoda(string):
+    fontsize = font_small.getsize(string)
+    yodacp = yodaimg.copy()
+    ys = yodacp.size
+    imgsize = [int(fontsize[0]*scale), int(fontsize[0] * scale * ys[1] / ys[0])]
+    yodacp = yodacp.resize(imgsize)
+    draw = ImageDraw.Draw(yodacp)
+    draw.text((int(fontsize[0] * (1 - scale/2)),
+               int(yodacp.size[1] - fontsize[1]*scale)),
+              string,
+              (255,255,255,1), 
+              font=font_small)
+    return yodacp
+    
 def say_(string, font):
     if len(string) == 0:
         return False
     
-    scale = 1.5
-    fontsize = font.getsize(string) #The size of the image
+    fontsize = font.getsize(string) #The size of the font
     imgsize = [int(fontsize[0] * scale), int(fontsize[1] * scale)]
 
     image = PImage.new('RGB', imgsize) #Create the image

@@ -233,6 +233,13 @@ morestring=[b]"
   \end{tikzpicture}
 }
 
+\hypersetup{%
+  pdftitle={Tutorial Tecnologías NoSQL},%
+  pdfauthor={Diego Sevilla Ruiz},
+  pdfsubject={NoSQL, JISBD'17},
+  pdfkeywords={nosql, jisbd17}
+}
+
 
 %----------------------------------------------------------------------------------------
 %       TITLE PAGE
@@ -549,23 +556,6 @@ slide = slides.find_one({'_id': 'slide000'})
 \end{block}
 \end{frame}
 
-\begin{frame}
-  \frametitle{¡Pero cuidado!}
-\begin{columns}
-\begin{column}{.5\textwidth}
-  \includegraphics[height=.7\textheight]{img/chose-wisely}
-\end{column}
-\begin{column}{.5\textwidth}
-\begin{alertblock}{SQL}
-\end{alertblock}
-\begin{alertblock}{NoSQL}
-\end{alertblock}
-\begin{alertblock}{Polyglot Persistence}
-\end{alertblock}
-\end{column}
-\end{columns}
-\end{frame}
-
 
 \begin{frame}
   \frametitle{Evolución desde el modelo relacional}
@@ -733,6 +723,151 @@ Cassandra desarrollada en Facebook en~2009\\
 }%
 \end{overlayarea}
 \end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Schemaless}
+\begin{itemize}
+\item NoSQL (en general) {\bf no requiere de un esquema}
+\begin{alertblock}{}
+  \centering
+  \href{https://farm6.staticflickr.com/5483/29931060254_109e3e36da_o_d.jpg}{\bf
+    SCHEMALESS}
+\end{alertblock}
+\item {\bf Flexibilidad}: Posibilidad de almacenar documentos con una
+  estructura diferente
+\begin{itemize}
+\item Tratar información incompleta
+\item Evolucionar la base de datos/esquema
+\item Añadir nuevas características a las aplicaciones
+\end{itemize}
+\end{itemize}
+
+\framebreak
+
+\begin{small}
+\begin{tabular}{p{.43\textwidth}cp{.43\textwidth}}
+{\bfseries\itshape schema-on-write}&$\Rightarrow$&{\bfseries\itshape
+                                                   schema-on-read}\\
+\hline
+SQL&&NoSQL\\
+Los datos conforman cuando se {\bf escriben}&&Los datos leídos conforman a
+                                               un {\bf esquema implícito}\\
+{\bf Tipado estricto} (estático) && {\bfseries\itshape Duck-Typing}
+                                    (dinámico) \\
+Datos homogéneos && Datos {\bf heterogéneos}
+\end{tabular}
+\end{small}
+% \item Se pasa de {\em schema-on-write} (se asegura que los
+%   datos son conformes cuando se escriben, como en relacional) a {\em
+%     schema-on-read} (los datos tienen un {\bfseries\itshape esquema
+%     implícito} cuando se leen)
+% \item Así, las bases de datos NoSQL están más cerca de los lenguajes
+%   dinámicos, mientras que las relacionales más cerca de los lenguajes
+%   estáticos
+% \end{itemize}
+\end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Schemaless (ii)}
+%   \begin{itemize}
+% \item El verdadero {\bf problema es: ¿cómo tratar esos datos?}
+%   \begin{itemize}
+% \item {\bf De manera genérica}, como almacenes de datos, o bien
+%   \item Que los documentos tengan una {\bfseries\itshape variación
+%       controlada}, en donde se mantienen fijos unos datos ``estándar'' del
+%     tipo de documento, y se pueden añadir otros campos que, si no se
+%     necesitan, se ignoran (conocido como {\bfseries\itshape duck typing})
+%   \end{itemize}
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Schemaless (ii)}
+\vspace*{-.7em}
+\begin{itemize}
+\item {\bf Ejemplo}: En un momento se decide añadir el campo {\tt
+    first\_name} a partir del campo {\tt name}
+\item Se empieza a incluir objetos con el nuevo formato
+\item A la hora de leerlos, se puede hacer:
+\end{itemize}
+\begin{lstlisting}
+if (user && user.name && !user.first_name) {
+   // Docs anteriores a 2013 no tienen first_name
+   user.first_name = user.name.split(" ")[0];
+}
+\end{lstlisting}
+\begin{itemize}
+\item En SQL puede ser un proceso muy costoso (procesa toda la tabla, puede
+  que haya que parar las aplicaciones):
+\end{itemize}
+\begin{lstlisting}[language=SQL]
+ALTER TABLE users ADD COLUMN first_name text;
+UPDATE users SET first_name =
+    substring_index(name, ' ', 1);
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Schemaless (iii)}
+  \begin{itemize}
+\item ¿Cuándo es apropiado {\em schemaless}?
+  \begin{itemize}
+  \item Cuando el sistema está compuesto por un número de objetos
+    heterogéneos
+\item Cuando la estructura de los datos está impuesta por un sistema
+  externo y tenemos que ser capaces de gestionarlos
+\item Si intuimos que los datos cambiarán en el futuro
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Schemaless (iv)}
+\begin{itemize}
+\item {\bf SIN EMBARGO...} Desde un punto de vista práctico, {\bf un
+    esquema es conveniente}
+\item En algunos casos necesario, para facilitar el desarrollo y evitar
+  inconsistencias
+  \begin{itemize}
+  \item {\tt Mongoose} para MongoDB permite definir esquemas:
+  \end{itemize}
+  \end{itemize}
+\begin{lstlisting}[language=Java]
+var Comment = new Schema({
+  name: { type: String, default: 'Anonymous' },
+  age: { type: Number, min: 18, index: true },
+  bio: { type: String, match: /[a-z]/ },
+  date: { type: Date, default: Date.now },
+  buff: Buffer
+});
+// a setter with on-line modification
+Comment.path('name').set(function (v) {
+  return capitalize(v);
+});
+\end{lstlisting}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{¡Pero cuidado!}
+\begin{columns}
+\begin{column}{.5\textwidth}
+  \includegraphics[height=.7\textheight]{img/chose-wisely}
+\end{column}
+\begin{column}{.5\textwidth}
+\begin{alertblock}{SQL}
+\end{alertblock}
+\begin{alertblock}{NoSQL}
+\end{alertblock}
+\begin{alertblock}{Polyglot Persistence}
+\end{alertblock}
+\end{column}
+\end{columns}
+\end{frame}
+
+
 
 \subsection{Modelado de datos en NoSQL}
 
@@ -946,128 +1081,6 @@ Cassandra desarrollada en Facebook en~2009\\
 %   \end{itemize}
 % \end{frame}
 
-\begin{frame}
-  \frametitle{Schemaless}
-\begin{itemize}
-\item NoSQL (en general) {\bf no requiere de un esquema}
-\begin{alertblock}{}
-  \centering
-  \href{https://farm6.staticflickr.com/5483/29931060254_109e3e36da_o_d.jpg}{\bf
-    SCHEMALESS}
-\end{alertblock}
-\item {\bf Flexibilidad}: Posibilidad de almacenar documentos con una
-  estructura diferente
-\begin{itemize}
-\item Tratar información incompleta
-\item Evolucionar la base de datos/esquema
-\item Añadir nuevas características a las aplicaciones
-\end{itemize}
-\end{itemize}
-
-\begin{small}
-\begin{tabular}{p{.43\textwidth}cp{.43\textwidth}}
-{\bfseries\itshape schema-on-write}&$\Rightarrow$&{\bfseries\itshape
-                                                   schema-on-read}\\
-\hline
-SQL&&NoSQL\\
-Los datos conforman cuando se {\bf escriben}&&Los datos leídos conforman a
-                                               un {\bf esquema implícito}\\
-{\bf Tipado estricto} (estático) && {\bfseries\itshape Duck-Typing}
-                                    (dinámico) \\
-Datos homogéneos && Datos {\bf heterogéneos}
-\end{tabular}
-\end{small}
-% \item Se pasa de {\em schema-on-write} (se asegura que los
-%   datos son conformes cuando se escriben, como en relacional) a {\em
-%     schema-on-read} (los datos tienen un {\bfseries\itshape esquema
-%     implícito} cuando se leen)
-% \item Así, las bases de datos NoSQL están más cerca de los lenguajes
-%   dinámicos, mientras que las relacionales más cerca de los lenguajes
-%   estáticos
-% \end{itemize}
-\end{frame}
-
-
-% \begin{frame}
-%   \frametitle{Schemaless (ii)}
-%   \begin{itemize}
-% \item El verdadero {\bf problema es: ¿cómo tratar esos datos?}
-%   \begin{itemize}
-% \item {\bf De manera genérica}, como almacenes de datos, o bien
-%   \item Que los documentos tengan una {\bfseries\itshape variación
-%       controlada}, en donde se mantienen fijos unos datos ``estándar'' del
-%     tipo de documento, y se pueden añadir otros campos que, si no se
-%     necesitan, se ignoran (conocido como {\bfseries\itshape duck typing})
-%   \end{itemize}
-%   \end{itemize}
-% \end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Schemaless (ii)}
-\vspace*{-.7em}
-\begin{itemize}
-\item {\bf Ejemplo}: En un momento se decide añadir el campo {\tt
-    first\_name} a partir del campo {\tt name}
-\item Se empieza a incluir objetos con el nuevo formato
-\item A la hora de leerlos, se puede hacer:
-\end{itemize}
-\begin{lstlisting}
-if (user && user.name && !user.first_name) {
-   // Docs anteriores a 2013 no tienen first_name
-   user.first_name = user.name.split(" ")[0];
-}
-\end{lstlisting}
-\begin{itemize}
-\item En SQL puede ser un proceso muy costoso (procesa toda la tabla, puede
-  que haya que parar las aplicaciones):
-\end{itemize}
-\begin{lstlisting}[language=SQL]
-ALTER TABLE users ADD COLUMN first_name text;
-UPDATE users SET first_name =
-    substring_index(name, ' ', 1);
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Schemaless (iii)}
-  \begin{itemize}
-\item ¿Cuándo es apropiado {\em schemaless}?
-  \begin{itemize}
-  \item Cuando el sistema está compuesto por un número de objetos
-    heterogéneos
-\item Cuando la estructura de los datos está impuesta por un sistema
-  externo y tenemos que ser capaces de gestionarlos
-\item Si intuimos que los datos cambiarán en el futuro
-  \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Schemaless (iv)}
-\begin{itemize}
-\item {\bf SIN EMBARGO...} Desde un punto de vista práctico, {\bf un
-    esquema es conveniente}
-\item En algunos casos necesario, para facilitar el desarrollo y evitar
-  inconsistencias
-  \begin{itemize}
-  \item {\tt Mongoose} para MongoDB permite definir esquemas:
-  \end{itemize}
-  \end{itemize}
-\begin{lstlisting}[language=Java]
-var Comment = new Schema({
-  name: { type: String, default: 'Anonymous' },
-  age: { type: Number, min: 18, index: true },
-  bio: { type: String, match: /[a-z]/ },
-  date: { type: Date, default: Date.now },
-  buff: Buffer
-});
-// a setter with on-line modification
-Comment.path('name').set(function (v) {
-  return capitalize(v);
-});
-\end{lstlisting}
-
-\end{frame}
 
 \subsection{Eficiencia {\em raw}}
 
@@ -1321,8 +1334,6 @@ db.observations.aggregate([
   \includegraphics[width=\textwidth]{img/sql-to-mongodb}
 \end{frame}
 
-\end{document}
-
 
 \subsection{Bases de Datos Columnares}
 
@@ -1348,6 +1359,156 @@ db.observations.aggregate([
 \begin{frame}[plain]
 \includegraphics[width=\textwidth]{img/column}
 \end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Introducción a HBase}
+\begin{center}
+  \includegraphics[width=.5\textwidth]{img/hbase_logo}
+\end{center}
+\begin{itemize}
+\item Base de datos {\em wide column store}
+\begin{itemize}
+\item Importante: Permite variabilidad en el número de columnas de cada
+  fila
+\item No sólo crece en número de filas. También puede crecer en número de
+  columnas sin coste
+\item Es una dimensión más de diseño a tener en cuenta
+\item También: Permite almacenar todos los valores antiguos para un dato
+  ({\bf series temporales})
+\end{itemize}
+\item Basada en el artículo seminal de Google sobre ``BigTable'' de
+  2006\footnote{Chang, Fay; Dean, Jeffrey; Ghemawat, Sanjay; Hsieh,
+    Wilson C; Wallach, Deborah A; Burrows, Michael ‘Mike’; Chandra,
+    Tushar; Fikes, Andrew; Gruber, Robert E (2006), {\em Bigtable: A
+      Distributed Storage System for Structured Data},
+    (\href{http://research.google.com/archive/bigtable-osdi06.pdf}{PDF}),
+    Google.}
+\item Diseñada para guardar cantidades de datos ingentes en clústers de
+  ordenadores
+\item Se la nombra como ``La base de datos de Hadoop'', porque sólo depende
+  de Hadoop:
+  \begin{itemize}
+  \item HDFS para almacenar la base de datos de forma distribuida
+  \item HDFS permite acceso eficiente para accesos secuenciales y trabajos
+    {\em batch\/}
+  \item HBase implementa acceso {\em random access} muy rápido
+  \item Map/Reduce para realizar búsquedas complejas y procesamiento sobre
+    la BD
+  \end{itemize}
+
+\framebreak
+
+\item Ofrece casi sólo la funcionalidad de una tabla {\em hash\/} enorme
+  con facilidades de tolerancia a fallos y distribución automática y guiada
+  \begin{itemize}
+  \item Cada fila tiene una clave, por la que se accede
+  \item Y un conjunto arbitrariamente grande de columnas, con sus valores
+  \item La BD mantiene {\bf físicamente juntas} las claves ordenadas {\bf
+      lexicográficamente}
+  \item Por lo tanto es {\bf muy rápido} encontrar filas relacionadas
+  \item El diseño correcto de la clave es {\color{red} crítico}
+  \end{itemize}
+
+\framebreak
+
+\item Operaciones muy rápidas:
+  \begin{itemize}
+  \item Operaciones CRUD ({\em Create}, {\em Read}, {\em Update}, {\em
+      Delete}) rápidas sobre documentos identificados por una clave (se
+    implementa alguna versión de árbol B+)
+\item Búsqueda secuencial con filtrado, ya que las claves están ordenadas
+\item Almacenamiento de un número ilimitado de {\bf versiones de los datos}
+  \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{HBase}
+  \begin{block}{}
+    {\Large  HBase is a {\color{red} sparse},\\ {\color{green} distributed},\\
+      {\color{blue} persistent},\\ {\color{red} multi-dimensional} \\
+      {\color{green} sorted map} (or Key/Value) \\ {\color{blue} store}}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{¿Cuándo usar HBase?}
+
+  \begin{block}{}
+    Necesidad de realizar cientos, miles de operaciones por segundo en
+    TB/PB de datos
+  \end{block}
+
+  \begin{block}{}
+    Con patrones de accesos son conocidos relativamente bien de antemano y
+    no tienen gran complejidad
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Tecnologías habilitadoras de HBase}
+HBase se implementa sobre Hadoop (HDFS y Map-Reduce)
+\begin{itemize}
+\item Una {\bf tabla} está formada por un número de filas, identificadas
+  por una clave
+\item Cada tabla se divide en {\bf regiones} (por rangos de clave ordenada
+  lexicográficamente) ({\bf partición horizontal})
+\item Una instalación de HBase utiliza un conjunto de {\bfseries\itshape
+    Region Servers}: nodos de computación con almacenamiento local (y
+  conectados al clúster HDFS)
+\item Cada grupo de columnas (llamado {\bfseries\itshape Column~Family\/})
+  se almacena en un {\bf Store} ({\bf partición vertical})
+\item El {\bf Store} tiene una parte en memoria ({\bf MemStore}) y,
+  opcionalmente, un almacenamiento en disco, ({\bf HFile})
+\item Los {\bf HFile} se distribuyen usando HDFS para lograr replicación y
+  tolerancia a fallos
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{HDFS}
+HDFS posee una arquitectura distribuida:
+    \begin{itemize}
+    \item {\bf NameNode} -- Almacena información sobre qué partes
+      ({\bfseries\itshape Chunks}) tiene cada fichero, y dónde están
+      almacenadas (y replicadas)
+    \item {\bf Secondary Namenode} -- Sustituto del {\bf NameNode} en caso
+      de fallo
+    \item {\bf DataNode}s -- Almacenan los {\em chunks\/} de cada fichero.
+      Cada {\em chunk} puede estar replicado un número de veces,
+      dependiendo de la configuración de HDFS
+    \item {\bf Zookeeper} -- Se encarga de mantener una consistencia de
+      {\em clúster} (saber qué nodos hay conectados y activos) y
+      sincronización de datos
+    \end{itemize}
+  \includegraphics[width=\textwidth]{img/hdfs1}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Inciso: {\em Consistent Hashing}}
+\framesubtitle{\url{http://blog.carlosgaldino.com/consistent-hashing.html}}
+  \includegraphics[width=\textwidth]{img/consistent-hashing}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Inciso: {\em Bloom Filters}}
+\includegraphics[width=\textwidth]{img/bloom_filter}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Formato de almacenamiento}
+  \begin{itemize}
+  \item El formato de HBase es de filas ({\em rows})
+\item Cada fila contiene un conjunto especificado de {\em familias de
+  columnas}
+\item  Cada familia puede incluir un número arbitrario de {\em columnas},
+  que puede cambiar por cada fila
+\item Para cada valor de columna se pueden guardar opcionalmente varios
+  valores anotados con un {\em timestamp} (histórico)
+  \end{itemize}
+\end{frame}
+
 
 \subsection{Bases de Datos de Grafos}
 
