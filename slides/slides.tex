@@ -161,7 +161,7 @@ morestring=[b]"
 
 %% Macros comunes
 \newcommand{\hide}[1]{}
-\newcommand{\ra}{$\rightarrow${}~{}}
+\newcommand{\ra}{{\color{blue} $\Rightarrow${}~{}}}
 
 \usepackage{fontspec}
 \defaultfontfeatures{Ligatures=TeX,Numbers=OldStyle}
@@ -472,25 +472,61 @@ slide = slides.find_one({'_id': 'slide000'})
 
 \section{Introducción a los sistemas NoSQL}
 
-\begin{frame}[allowframebreaks]
+\begin{frame}
   \frametitle{Introducción a NoSQL}
 \begin{itemize}
-\item {\bf NoSQL} incluye un conjunto de tecnologías relativamente dispares
-\item Aún así, {\bf características comunes}:
+% \item Sobre los \~{}2010s, se renueva la búsqueda de la escalabilidad, con
+%   el abaratamiento del {\em hardware}
+% \item Se {\bf diversifican los problemas}, la inclusión del {\bf análisis
+%     de todos los datos disponibles por parte de las empresas}
+% \begin{itemize}
+% \item incluso de algunos que no se había pensado usar, p. ej. {\em
+%     clickstreams\/}), {\bf publicidad a la carta}, etc.
+% \end{itemize}
+\item {\bf NoSQL} \ra{} {\em hashtag\/} llamativo que se
+  eligió para una conferencia en~2009 (Johan Oskarsson de Last.fm)
+\item Ahora se asocia a cientos de bases de datos diferentes,
+  que se han clasificado en varios tipos (las veremos después),
+  caracterizadas por {\bf no usar SQL} como modelo de datos
+\item {\bf NoSQL} \ra{} {\bfseries\itshape Not Only SQL} (no sólo SQL)
+\item Big Data \ra{} hay una variedad de fuentes de datos ({\bf persistencia
+    polígota})
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Cambio a NoSQL -- ¿Por qué?}
+%En general, el desarrollo de NoSQL ha venido motivado, entre otras, por una
+%serie de circunstancias:
+\begin{enumerate}
+\item {\bf Mayor escalabilidad horizontal}
   \begin{itemize}
-  \item No se basan en SQL
-  \item {\bf Escalabilidad}
-  \item Generalmente no obligan a definir un esquema ({\itshape\bfseries
-      schemaless})
-\item Surgidos de la comunidad para solucionar problemas, y muchas de
-  ellas son {\bf libres/{\itshape open source}}
-\item Diseño basado en procesamiento distribuido
-\item Aplican tecnologías funcionales como {\bf MapReduce}
-\end{itemize}
-\end{itemize}
+  \item conjuntos de datos muy muy grandes
+  \item sistemas de alto volumen de escrituras ({\em streaming\/} de
+    eventos, aplicaciones sociales)
+  \end{itemize}
+\item {\bf Demanda de productos de software libre} (crecimiento de las {\em
+    start-ups})
+\item {\bf Consultas especializadas} no eficientes en el modelo relacional
+  (JOINs)
+\item {\bf Expresividad, flexibilidad, dinamismo}. Frustración con {\bf
+    restricciones} del modelo relacional \ra{} ({\bfseries\itshape
+    schemaless})
+\item Paradigma {\bf funcional}: {\em Map-Reduce}
+\end{enumerate}
+
 \framebreak
 
+\begin{alertblock}{Sin embargo...}
+\begin{small}
+Hay que elegir la herramienta correcta para cada aplicación, y SQL puede ser
+una buena opción $\Rightarrow$ {\bf polyglot persistence}
+\end{small}
+\end{alertblock}
+\end{frame}
 
+\begin{frame}
+  \frametitle{Introducción a NoSQL}
   \begin{block}{Categorías de NoSQL}
     \begin{itemize}
     \item Bases de datos Key-Value
@@ -500,7 +536,6 @@ slide = slides.find_one({'_id': 'slide000'})
     \item Bases de datos de arrays
     \end{itemize}
 \end{block}
-
 \end{frame}
 
 
@@ -562,54 +597,6 @@ Cassandra desarrollada en Facebook en~2009\\
 \end{frame}
 
 
-\begin{frame}
-  \frametitle{Cambio a NoSQL -- Inicios}
-\begin{itemize}
-% \item Sobre los \~{}2010s, se renueva la búsqueda de la escalabilidad, con
-%   el abaratamiento del {\em hardware}
-% \item Se {\bf diversifican los problemas}, la inclusión del {\bf análisis
-%     de todos los datos disponibles por parte de las empresas}
-% \begin{itemize}
-% \item incluso de algunos que no se había pensado usar, p. ej. {\em
-%     clickstreams\/}), {\bf publicidad a la carta}, etc.
-% \end{itemize}
-\item El término {\bf NoSQL} $\Rightarrow$ {\em hashtag\/} llamativo que se
-  eligió para una conferencia en~2009 (Johan Oskarsson de Last.fm)
-\item Ahora se asocia a cientos de bases de datos diferentes,
-  que se han clasificado en varios tipos (las veremos después),
-  caracterizadas por {\bf no usar SQL} como modelo de datos
-\item El término ha derivado hacia la interpretación {\bfseries\itshape Not
-    Only SQL} (no sólo SQL), jugando también con la idea de que en Big Data
-  hay una variedad de fuentes de datos
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Cambio a NoSQL -- ¿Por qué?}
-%En general, el desarrollo de NoSQL ha venido motivado, entre otras, por una
-%serie de circunstancias:
-\begin{enumerate}
-\item {\bf Mayor escalabilidad horizontal}, incluyendo
-  \begin{itemize}
-  \item conjuntos de datos muy muy grandes
-  \item sistemas de alto volumen de escrituras ({\em streaming\/} de
-    eventos, aplicaciones sociales)
-  \end{itemize}
-\item {\bf Demanda de productos de software libre} (crecimiento de las {\em
-    start-ups})
-\item {\bf Consultas especializadas} no eficientes en el modelo relacional
-  (JOINs)
-\item {\bf Expresividad, flexibilidad, dinamismo}.Frustración con {\bf
-    restricciones} del modelo relacional
-\end{enumerate}
-\pause
-\begin{alertblock}{Sin embargo...}
-\begin{small}
-Hay que elegir la herramienta correcta para cada aplicación, y SQL puede ser
-una buena opción $\Rightarrow$ {\bf polyglot persistence}
-\end{small}
-\end{alertblock}
-\end{frame}
 
 \subsection{La importancia de la escalabilidad}
 
@@ -757,7 +744,7 @@ una buena opción $\Rightarrow$ {\bf polyglot persistence}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Representación de un CV como tablas}
+  \frametitle{Representación relacional de un CV}
 \framesubtitle{Kleppmann, 2016. \emph{Designing Data Intensive Applications}}
 \vspace*{-.8ex}
   \centering\includegraphics[height=.86\textheight]{img/gates}
@@ -1148,6 +1135,11 @@ Comment.path('name').set(function (v) {
 
 
 \subsection{Key-Value y Documentales}
+
+\begin{frame}
+  \frametitle{Key-Value Stores y Documentales}
+  \includegraphics[width=\textwidth]{img/MongoDB}
+\end{frame}
 
 \begin{frame}
   \frametitle{Key-Value Stores y Documentales}
