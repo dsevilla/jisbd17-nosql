@@ -1546,7 +1546,9 @@ from bson.code import Code
 map = Code(
     '''function () {
            if ('text' in this)
-               emit(this.text.length, 1);
+               emit(this.text.length, 1)
+           else
+               emit(0,1)
        }''')
 reduce = Code(
     '''function (key, values) {
