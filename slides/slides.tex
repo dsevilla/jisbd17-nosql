@@ -311,11 +311,14 @@ Universidad de Murcia\\
 \titlepage % Print the title page as the first slide
 \end{frame}
 
+\section{Introducción}
 
 % \begin{frame}
 % \frametitle{Índice}
 % \tableofcontents[]
 % \end{frame}
+
+\subsection{¿Qué veremos aquí?}
 
 \begin{frame}[allowframebreaks]
   \frametitle{¿Qué veremos aquí?}
@@ -734,6 +737,8 @@ Cassandra desarrollada en Facebook en~2009\\
 \end{overlayarea}
 \end{frame}
 
+\subsection{Schemaless}
+
 \begin{frame}[fragile,allowframebreaks]
   \frametitle{Schemaless}
 \begin{itemize}
@@ -1010,7 +1015,7 @@ Comment.path('name').set(function (v) {
   \end{itemize}
 \item ¿Qué opción elegir?
 \end{itemize}
-\pause
+
 \vspace*{-.8ex}
 \begin{alertblock}{¡Modelado guiado por el acceso a datos!}
 \begin{small}
@@ -1174,20 +1179,20 @@ Comment.path('name').set(function (v) {
   \includegraphics[width=\textwidth]{img/MongoDB}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
   \frametitle{Key-Value Stores y Documentales}
 \vspace*{-.9em}
 \begin{itemize}
-\item Cada pieza de datos tiene asignado un identificador
+\item A cada pieza de datos se le asigna un identificador
 \item La diferencia entre ambas es que:
   \begin{itemize}
-  \item En Key-Value, el valor es opaco, no se conoce nada de su interior
-    (a todos los efectos es un {\em blob\/} de datos)
-\item En las basadas en documentos, la base de datos puede ver el contenido
-  del agregado, y utilizar su información como parte de las búsquedas y
-  actualizaciones
+  \item En {\bf Key-Value}, el valor es opaco (es un {\em blob\/} de datos)
+  \item En las documentales, la base de datos puede ver el contenido del
+    agregado, y utilizar su información como parte de las búsquedas y
+    actualizaciones
 \end{itemize}
-\item Docs. $\Rightarrow$ formatos jerárquicos tipo JSON o XML
+\item Documentos $\Rightarrow$ formatos jerárquicos tipo JSON o XML
+\framebreak
 \item La diferencia entre ambas queda un poco difusa
   \begin{itemize}
   \item Por ejemplo, Riak es Key-Value pero permite realizar búsquedas
@@ -1195,15 +1200,96 @@ Comment.path('name').set(function (v) {
 \item Redis permite que los valores de datos sean estructurados en arrays,
   estructuras complejas, mapas
   \end{itemize}
-\item Key-Value: Riak, Redis, Memcache, LevelDB
-\item Documentos: CouchDB, MongoDB, OrientDB
+\item Key-Value: Riak, Redis, Memcached, LevelDB
+\item Documentos: CouchDB, MongoDB, OrientDB (mixta grafos)
 \end{itemize}
 \end{frame}
 
-\subsection{Map-Reduce}
+\begin{frame}[fragile]
+  \vspace{-0.65cm}
+  \begin{columns}
+    \column[t]{.5\textwidth}
+    \begin{lstlisting}[language=json,basicstyle=\tiny\tt]
+{ "type": "Movie",
+  "title": "Citizen Kane",
+  "year": 1941,
+  "director_id": "123451",
+  "genre": "Drama",
+  "_id": "1",
+  "rating":
+  { "score": 8.4,
+    "voters": 310768
+  },
+  "prizes": [
+    { "year": 1941,
+      "event": "Oscar",
+      "names": ["Best original screenplay"]
+    },
+    { "year": 1941,
+      "event": "NY Film Critics",
+      "names": ["Best screenplay"]
+    }
+  ],
+  "criticisms": [
+    { "journalist": "R. Brody",
+      "media": "The New Yorker",
+      "color": "green"
+    }
+  ]
+},
+{ "_id": "123451",
+  "name": "Orson Welles",
+  "type": "director",
+  "directed_movies": ["1"],
+  "acted_movies": ["1"]
+},
+    \end{lstlisting}
+    \column[t]{.5\textwidth}
+    \begin{lstlisting}[language=json,basicstyle=\tiny\tt]
+{ "_id": "2",
+  "type": "Movie",
+  "title": "Truth",
+  "year": 2015,
+  "director_id": "345679",
+  "genre": "Drama",
+  "rating": {
+    "score": 6.8,
+    "voters": 12682
+  },
+  "criticisms":[
+    {
+      "journalist": "Jordi Costa",
+      "media": {
+        "name": "El Pais",
+        "url": "http://elpais.com/"
+      },
+      "color": "red"
+    },
+    {
+      "journalist": "Lou Lumenick",
+      "media": "New York Post",
+      "color": "green"
+    }
+  ]
+},
+{
+  "_id": "345679",
+  "name": "James Vanderbilt",
+  "type": "director",
+  "directed_movies": ["2"]
+}
+    \end{lstlisting}
+  \end{columns}
+\end{frame}
 
 \begin{frame}[allowframebreaks,fragile]
 \frametitle{Map-Reduce}
+
+\begin{block}{}
+  \centering Las BD Documentales (y la mayoría de las NoSQL) usan {\bf
+    Map-Reduce} como principal mecanismo de búsqueda y transformación
+\end{block}
+
 \begin{itemize}
 \item Origen en {\bf lenguajes funcionales}:
 \begin{itemize}
@@ -1223,8 +1309,8 @@ foldl :: (a -> b -> a) -> a -> [b] -> a
 
 \item Map-Reduce combina ambas operaciones:
 \begin{itemize}
-\item Una misma operación {\tt map()} a cada dato residente en un nodo es
-  realizada de forma paralela en {\bf todos} los nodos simultáneamente
+\item Una misma operación {\tt map()} a cada dato residente en un nodo se
+  realiza de forma paralela en {\bf todos} los nodos simultáneamente
 \item Con los resultados parciales de cada nodo, una función {\tt reduce()}
   genera un resultado (o un conjunto de resultados) final
 \item Hay un proceso intermedio de {\em shuffle} para agrupar valores
@@ -2430,7 +2516,9 @@ CREATE INDEX ON :Etiqueta(nombre)
 
 \section{Referencias}
 
-\begin{frame}[fragile,allowframebreaks]{Referencias}
+\begin{frame}[fragile,allowframebreaks]
+  \frametitle{Referencias}
+
 \begin{thebibliography}{Paternostro, 2009}
 
 \setbeamertemplate{bibliography item}[book]
