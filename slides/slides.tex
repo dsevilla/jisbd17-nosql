@@ -1,5 +1,6 @@
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{naturalnames}{hyperref}
+\PassOptionsToPackage{table}{xcolor}
 
 \documentclass[14pt]{beamer}
 
@@ -60,12 +61,12 @@
 %\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
 
 \setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
-\setbeamertemplate{frametitle continuation}[from second][\insertcontinuationtext]
+\setbeamertemplate{frametitle continuation}[from second][(\insertcontinuationcountroman)]
 }
 
 \usepackage{graphicx} % Allows including images
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
-\usepackage[T1]{fontenc}
+%\usepackage[T1]{fontenc}
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
@@ -357,6 +358,8 @@ Universidad de Murcia\\
     Replicación, seguridad, etc.
   \end{alertblock}
 \end{frame}
+
+\subsection{Un inciso}
 
 \begin{frame}[fragile,allowframebreaks]
   \frametitle{Pero antes, un inciso}
@@ -763,13 +766,14 @@ Cassandra desarrollada en Facebook en~2009\\
 \begin{tabular}{p{.43\textwidth}cp{.43\textwidth}}
 {\bfseries\itshape schema-on-write}&$\Rightarrow$&{\bfseries\itshape
                                                    schema-on-read}\\
-\hline
-SQL&&NoSQL\\
-Los datos conforman cuando se {\bf escriben}&&Los datos leídos conforman a
+\midrule
+\rowcolor{blue!20} SQL&&NoSQL\\
+\rowcolor{blue!15} Los datos conforman cuando se {\bf escriben}&&Los datos leídos conforman a
                                                un {\bf esquema implícito}\\
-{\bf Tipado estricto} (estático) && {\bfseries\itshape Duck-Typing}
+\rowcolor{blue!20} {\bf Tipado estricto} (estático) && {\bfseries\itshape Duck-Typing}
                                     (dinámico) \\
-Datos homogéneos && Datos {\bf heterogéneos}
+\rowcolor{blue!15}  Datos homogéneos && Datos {\bf heterogéneos}\\
+\rowcolor{blue!20} Proceso analítico a través de {\bf consultas} && {\bfseries\itshape Use as read}\\
 \end{tabular}
 \end{small}
 % \item Se pasa de {\em schema-on-write} (se asegura que los
@@ -784,9 +788,9 @@ Datos homogéneos && Datos {\bf heterogéneos}
 \framebreak
 
 \begin{itemize}
-\item {\bf Ejemplo}: En un momento se decide añadir el campo {\tt
-    first\_name} a partir del campo {\tt name}
-\item Se empieza a incluir objetos con el nuevo formato
+\item {\bf Ejemplo}: Añadir el campo {\tt first\_name} a partir del campo
+  {\tt name}
+\item Los nuevos objetos se crean con el nuevo formato
 \item A la hora de leerlos, se puede hacer:
 \end{itemize}
 \begin{lstlisting}
@@ -799,8 +803,8 @@ if (user && user.name && !user.first_name) {
 \framebreak
 
 \begin{itemize}
-\item En SQL puede ser un proceso muy costoso (procesa toda la tabla, puede
-  que haya que parar las aplicaciones):
+\item En SQL puede ser un proceso muy costoso (procesa toda la tabla, {\em
+    locking\/}, puede que haya que parar las aplicaciones):
 \end{itemize}
 \begin{lstlisting}[language=SQL]
 ALTER TABLE users ADD COLUMN first_name text;
@@ -810,42 +814,37 @@ UPDATE users SET first_name =
 
 \framebreak
 
-\begin{itemize}
-\item ¿Cuándo es apropiado {\em schemaless}?
+\begin{block}{¿Cuándo es apropiado {\em schemaless}?}
   \begin{itemize}
-  \item Cuando el sistema está compuesto por un número de objetos
-    heterogéneos
-\item Cuando la estructura de los datos está impuesta por un sistema
-  externo y tenemos que ser capaces de gestionarlos
-\item Si intuimos que los datos cambiarán en el futuro
+  \item {\bf Objetos heterogéneos}
+\item Estructura de los datos {\bf impuesta externamente}
+\item Si intuimos que los datos {\bf cambiarán en el futuro}
   \end{itemize}
-\end{itemize}
+\end{block}
+
 
 \framebreak
 
+\begin{block}{SIN EMBARGO...}
+ A veces {\bf un esquema es conveniente}
 \begin{itemize}
-\item {\bf SIN EMBARGO...} Desde un punto de vista práctico, {\bf un
-    esquema es conveniente}
-\item En algunos casos necesario \ra{} facilita el desarrollo y evita
-  inconsistencias
+\item Facilita el desarrollo y evita inconsistencias
   \begin{itemize}
   \item {\tt Mongoose} para MongoDB:
   \end{itemize}
-  \end{itemize}
+\end{itemize}
 \begin{lstlisting}[language=Java]
 var Comment = new Schema({
   name: { type: String, default: 'Anonymous' },
-  age: { type: Number, min: 18, index: true },
-  bio: { type: String, match: /[a-z]/ },
   date: { type: Date, default: Date.now },
-  buff: Buffer
+  text: Buffer
 });
 // a setter with on-line modification
 Comment.path('name').set(function (v) {
   return capitalize(v);
 });
 \end{lstlisting}
-
+\end{block}
 \end{frame}
 
 
@@ -869,31 +868,22 @@ Comment.path('name').set(function (v) {
 
 \subsection{Modelado de datos en NoSQL}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
   \frametitle{Modelado de datos en NoSQL}
-\begin{itemize}
-\item El modelado de datos ({\bf en principio}) debe ser:
+El modelado de datos debe ser:
   \begin{itemize}
   \item Realizado al mayor nivel de abstracción posible
   \item Independiente de la tecnología subyacente
   \end{itemize}
-\item Sin embargo:
+Sin embargo, en NoSQL:
   \begin{itemize}
   \item Se tiene que tener en cuenta el diseño {\bf distribuido}
-  \item Se tiene que considerar qué consultas se realizan para ofrecer un
-    acceso {\bf eficiente}
+  \item {\bf Optimización guiada por las consultas}
   \end{itemize}
-% \item Para decidir la mejor tecnología de BD hay que entender las
-%   relaciones entre las diferentes entidades {\bf y además} qué datos se van
-%   a necesitar
-%   \begin{itemize}
-%   \item Por ejemplo, se preguntará ``{\bf ¿cómo diseño este conjunto de
-%       tablas o este documento para esta relación uno a muchos?}''
-%   \item Y también, ``{\bf ¿qué consultas se van a realizar sobre los
-%       datos?}'' (las cuales van a definir cómo organizo las tablas o
-%     documentos)
-%   \end{itemize}
-\item Con respecto al modelo de datos:
+
+  \framebreak
+Con respecto al modelo de datos:
+
 \begin{itemize}
 \item Se mantienen los conceptos de entidad, relación, cardinalidades, etc.
 \item El modelado relacional se centra en especificar {\bf qué datos
@@ -903,22 +893,22 @@ Comment.path('name').set(function (v) {
 \item Es ``barato'' {\bf duplicar (desnormalizar)} los datos si con ello se
   consigue {\bf mayor eficiencia de acceso}
 \end{itemize}
-\end{itemize}
+
 \end{frame}
 
 \begin{frame}
   \frametitle{Representación relacional de un CV}
 \framesubtitle{Kleppmann, 2016. \emph{Designing Data Intensive Applications}}
-\vspace*{-.8ex}
-  \centering\includegraphics[height=.86\textheight]{img/gates}
+  \centering\includegraphics[height=.81\textheight]{img/gates}
 \end{frame}
 
 \begin{frame}
   \frametitle{Representación de relaciones}
-\framesubtitle{Relaciones uno a muchos}
-\begin{itemize}
-\item Las relaciones uno a muchos (por ejemplo en el resumen: {\tt
-    positions}) en el modelo relacional:
+  \framesubtitle{Relaciones uno a muchos}
+
+  Las relaciones uno a muchos (e.g. {\tt positions}) en el modelo
+  relacional:
+
 \begin{itemize}
 \item Normalización usando varias tablas ({\tt Positions} con
   {\tt user\_id})
@@ -929,15 +919,14 @@ Comment.path('name').set(function (v) {
 \item Algunos SGBDR ofrecen la posibilidad de tener tipos de datos
   estructurados y campos XML o JSON. (P. ej. PostgreSQL)
   \begin{itemize}
-  \item Usualmente no se pueden usar para buscar dentro
+  \item Alternativa interesante, aunque...
   \item No son estándar
   \end{itemize}
 \end{itemize}
-\end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]
-  \frametitle{CV como un documento}
+\begin{frame}[plain,fragile]
+%  \frametitle{CV como un documento}
 \begin{lstlisting}[language=json,basicstyle=\tiny\tt]
 {
   "user_id": 251,
@@ -982,29 +971,31 @@ Comment.path('name').set(function (v) {
 \centering\includegraphics[height=.85\textheight]{img/tree}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Representación de Relaciones (ii)}
+\begin{frame}[allowframebreaks]
+  \frametitle{Representación de Relaciones}
 \framesubtitle{Modelo de documentos}
 \begin{itemize}
-\item El {\bf modelo de documentos} sigue la analogía del {\bf array/mapa
+\item {\bf Modelo de documentos} \ra{} analogía del {\bf array/mapa
     gigante}
-\item Los datos se estructuran como un {\bf conjunto de documentos}
-  (objetos complejos)
-\item Cada documento tiene:
+\item {\bf Conjunto de documentos} (objetos complejos)
   \begin{itemize}
-\item Un {\bf identificador único}, con algún tipo de campo {\em id\/}
-\item Este campo permite la búsqueda aleatoria eficiente por clave ({\bf
-    referencia})
-\item Una estructura jerárquica de sub-documentos contenidos $\Rightarrow$
+\item Un {\bf identificador único}, campo {\em id\/}
+\item Búsqueda aleatoria eficiente por clave ({\bf referencia})
+\item Estructura jerárquica de sub-documentos contenidos \ra{}
   {\bf agregación}
 \end{itemize}
-\item Nótese que permite más flexibilidad que el modelo relacional
-  (elección entre \underline{\em referencia} y \underline{\em agregación})
 \end{itemize}
+
+
+\begin{alertblock}{}
+  Más flexibilidad que el modelo relacional (elección entre \underline{\em
+    referencia} y \underline{\em agregación})
+\end{alertblock}
+
 \end{frame}
 
-\begin{frame}
-  \frametitle{Representación de Relaciones (iii)}
+\begin{frame}[allowframebreaks]
+  \frametitle{Representación de Relaciones}
 \framesubtitle{Uno a muchos (ii) -- NoSQL}
 \begin{itemize}
 \item Relaciones {\bf Uno a Muchos} ({\tt positions}):
@@ -1016,46 +1007,42 @@ Comment.path('name').set(function (v) {
 \item ¿Qué opción elegir?
 \end{itemize}
 
-\vspace*{-.8ex}
-\begin{alertblock}{¡Modelado guiado por el acceso a datos!}
+\framebreak
+
+\begin{alertblock}{¡Modelo guiado por el acceso a datos!}
 \begin{small}
   \begin{itemize}
   \item Si los elementos ``muchos'' tienen una estructura sencilla
-    $\Rightarrow$ {\bf Opción~1}
+    \ra{} {\bf Opción~1}
 \item Si los elementos ``muchos'' son usualmente {\bf recuperados en una
-    consulta} junto con el elemento ``uno'' $\Rightarrow$ {\bf Opción~1}
+    consulta} junto con el elemento ``uno'' \ra{} {\bf Opción~1}
 \item Si los elementos ``muchos'' son relativamente grandes, o bien son
-  recuperados siempre de forma separada $\Rightarrow$ {\bf Opción~2}
+  recuperados siempre de forma separada \ra{} {\bf Opción~2}
   \end{itemize}
 \end{small}
 \end{alertblock}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Representación de Relaciones (iv)}
+  \frametitle{Representación de Relaciones}
   \framesubtitle{Muchos a uno y muchos a muchos}
-  \begin{itemize}
-  \item Las relaciones muchos a uno y muchos a muchos:
+Relaciones muchos a uno y muchos a muchos:
     \begin{itemize}
     \item Personas que viven en una región
 \item Preguntas que refieren a Tags
     \end{itemize}
-  \item No muy adecuado al modelo de documentos
-\item Al menos no aportan ventajas con respecto al modelo relacional
-\item Al haber muchas entidades que refieren a otra entidad,
-  la {\em agregación} daría lugar a mucha {\bf duplicación} (y a
-  problemas de sincronización)
-% \begin{itemize}
-% \item (A no ser que las entidades sean {\bf muy pequeñas}, y se puede
-%   agregar una lista $\Rightarrow$ {\tt Tags} en {\tt Post})
-% \end{itemize}
-\item {\color{red} $\Rightarrow$} {\bf Referencias} (sobre el ID), similar a
-  una FK en el modelo relacional
+El modelo de documentos no aporta ventajas
   \begin{itemize}
-  \item {\bf Sin embargo}, al no haber {\bf JOINs} la aplicación tiene que
-    hacer más de una petición a la BD
+  \item La {\em agregación} daría lugar a mucha {\bf duplicación} (y a
+  problemas de sincronización)
+
+\item {\color{red} $\Rightarrow$} {\bf Referencias} (sobre el ID), similar
+  a una FK en el modelo relacional
+\begin{itemize}
+  \item {\color{red} $\Rightarrow$} al no haber {\bf JOINs} la aplicación
+    tiene que hacer más de una petición a la BD
   \end{itemize}
-  \end{itemize}
+\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -1085,7 +1072,7 @@ Comment.path('name').set(function (v) {
 \begin{frame}[allowframebreaks]
   \frametitle{Eficiencia {\em raw}}
   \begin{itemize}
-  \item Pero los sistemas NoSQL tienen que competir también con los SQL en
+  \item Los sistemas NoSQL tienen que competir también con los SQL en
     términos de eficiencia neta (también llamada {\em raw})
   \item Un pequeño test sintético nos puede ayudar a hacernos una
     idea\footnote{\url{http://bonesmoses.org/2016/07/15/pg-phriday-a-postgres-persepctive-on-mongodb/}.}
@@ -1100,7 +1087,7 @@ Comment.path('name').set(function (v) {
   tiempo
   \item Se realizan seis pruebas que pueden corresponder a un conjunto de
     consultas normales:
-\framebreak
+  \framebreak
   \begin{enumerate}
   \item Inicialmente se insertan {\bf un millón} de elementos generados al
     azar, con fechas que permitan la búsqueda por rango ({\bf Fill})
@@ -1110,7 +1097,7 @@ Comment.path('name').set(function (v) {
     por rango de fechas ({\bf Update})
   \item Se eliminan un conjunto de filas seleccionadas por rango de fechas
     ({\bf Delete})
-  \item Se obtiene el número de filas restantes ({\bf Count})
+  \item Obtiene el número de filas restantes ({\bf Count})
   \item Se obtiene un {\bf subconjunto} de filas extraído de una consulta
     dada por un rango de fechas ({\bf Interval})
   \end{enumerate}
@@ -1123,19 +1110,22 @@ Comment.path('name').set(function (v) {
 
 
 \begin{itemize}
-\item El gráfico se muestra en escala logarítmica en el eje Y (las
+\item El gráfico tiene escala logarítmica en el eje Y (las
   diferencias pequeñas se acentúan)
-\item A simple vista, ambos productos están muy igualados
+\item A simple vista, ambos están muy igualados
   \begin{itemize}
   \item SQL (MySQL) lleva {\em muchos años} de optimizaciones
-  \item Mientras que productos como MongoDB tienen menos historia a sus
-    espaldas en cuanto a optimizaciones, etc.
+  \item MongoDB tiene menos historia a sus espaldas en cuanto a
+    optimizaciones, etc.
   \end{itemize}
 \item Hay casos en los que uno es más rápido que el otro y viceversa
+
+\framebreak
+
 \item No se puede decir cuál es mejor
   \begin{itemize}
-  \item {\bf $\Rightarrow$ DEPENDE DEL PATRÓN DE ACCESOS QUE VAYA A TENER
-      NUESTRA APLICACIÓN}
+  \item {\bf \color{red} $\Rightarrow$ DEPENDE DEL PATRÓN DE ACCESOS QUE VAYA A
+      TENER NUESTRA APLICACIÓN}
   \item (p. ej. contado en MongoDB mucho más rápido que en MySQL;
     actualización algo más rápida)
   \end{itemize}
@@ -1186,14 +1176,14 @@ Comment.path('name').set(function (v) {
 \item A cada pieza de datos se le asigna un identificador
 \item La diferencia entre ambas es que:
   \begin{itemize}
-  \item En {\bf Key-Value}, el valor es opaco (es un {\em blob\/} de datos)
+  \item En {\bf Key-Value}, el valor es opaco (es un {\em blob\/})
   \item En las documentales, la base de datos puede ver el contenido del
     agregado, y utilizar su información como parte de las búsquedas y
     actualizaciones
 \end{itemize}
 \item Documentos $\Rightarrow$ formatos jerárquicos tipo JSON o XML
 \framebreak
-\item La diferencia entre ambas queda un poco difusa
+\item La diferencia entre ambas un poco difusa
   \begin{itemize}
   \item Por ejemplo, Riak es Key-Value pero permite realizar búsquedas
     indexadas parecidas a las de Solr/Lucene
@@ -2543,6 +2533,10 @@ Pramod J. Saldage, Martin Fowler
 \bibitem[Wilson, 2012]{Wilson2012}
 Jim R. Wilson, Eric Redmond
 \newblock {\em Seven Databases in Seven Weeks}
+
+\bibitem[Kleppmann, 2016]{Kleppmann2016}
+Kleppmann
+\newblock  \emph{Designing Data Intensive Applications}
 
 \bibitem[George, 2011]{George2011}
 Lars George
