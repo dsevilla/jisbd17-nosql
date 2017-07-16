@@ -1464,6 +1464,65 @@ sudo pip2 install pymongo
   \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile,allowframebreaks]
+  \frametitle{Métodos de búsqueda}
+  \begin{itemize}
+  \item La función {\tt find()} tiene un gran número de posibilidades para
+    especificar la búsqueda. Se pueden utilizar cualificadores complejos
+    como:
+    \begin{itemize}
+    \item \verb|$and|
+    \item \verb|$or|
+    \item \verb|$not|
+    \end{itemize}
+
+  \item Estos calificadores unen ``objetos'', no valores
+\framebreak
+  \item Por otro lado, hay
+    otros calificadores que se refieren a valores:
+\begin{itemize}
+\item \verb|$lt| (menor)
+\item \verb|$lte| (menor o igual)
+\item \verb|$gt| (mayor)
+\item \verb|$gte| (mayor o igual)
+\item \verb|$regex| (expresión regular)
+\end{itemize}
+  \end{itemize}
+\begin{lstlisting}[language=Python]
+jisbd17.find_one({'text': {'$regex' : '[Mm]ongo'}})['_id']
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Métodos de inserción y actualización}
+  \begin{itemize}
+  \item También ofrece métodos para inserción y actualización:
+    \begin{itemize}
+    \item {\tt insert\_one()}, {\tt insert\_many()} (batch)
+    \item {\tt update\_one()} -- Permite actualizar un objeto con nuevos
+      campos. El objeto se crea si se pone el parámetro {\tt upsert} a {\tt
+        True}
+    \item {\tt update\_many()} -- Permite poner nuevos valores calculados a
+      un conjunto de objetos
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Índices, {\tt explain()}}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Map-Reduce}
+  \centering\includegraphics[height=.85\textheight]{img/mongo-map-reduce}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Framework de agregación}
+
+\end{frame}
+
 
 
 \subsection{Bases de Datos Columnares}
