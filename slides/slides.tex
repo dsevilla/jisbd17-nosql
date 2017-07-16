@@ -79,6 +79,15 @@
 %\usepackage{keystroke}
 %\usepackage{etoolbox}
 
+% Language Definitions for CYPHER
+\lstdefinelanguage{cypher}{
+morecomment=[l][\color{gray}]{//},
+morestring=[b][\color{olive}]\",
+morestring=[b][\color{olive}]\',
+morekeywords={MATCH,WHERE,LIMIT,CREATE,RETURN,DISTINCT,DELETE,DETACH,UNIQUE,MERGE,INDEX,ON,SET,LOAD,CSV,FOREACH,IN},
+sensitive=true
+}
+
 %
 % Listados de código
 %
@@ -725,7 +734,7 @@ Cassandra desarrollada en Facebook en~2009\\
 \end{overlayarea}
 \end{frame}
 
-\begin{frame}[allowframebreaks]
+\begin{frame}[fragile,allowframebreaks]
   \frametitle{Schemaless}
 \begin{itemize}
 \item NoSQL (en general) {\bf no requiere de un esquema}
@@ -766,26 +775,9 @@ Datos homogéneos && Datos {\bf heterogéneos}
 %   dinámicos, mientras que las relacionales más cerca de los lenguajes
 %   estáticos
 % \end{itemize}
-\end{frame}
 
+\framebreak
 
-% \begin{frame}
-%   \frametitle{Schemaless (ii)}
-%   \begin{itemize}
-% \item El verdadero {\bf problema es: ¿cómo tratar esos datos?}
-%   \begin{itemize}
-% \item {\bf De manera genérica}, como almacenes de datos, o bien
-%   \item Que los documentos tengan una {\bfseries\itshape variación
-%       controlada}, en donde se mantienen fijos unos datos ``estándar'' del
-%     tipo de documento, y se pueden añadir otros campos que, si no se
-%     necesitan, se ignoran (conocido como {\bfseries\itshape duck typing})
-%   \end{itemize}
-%   \end{itemize}
-% \end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Schemaless (ii)}
-\vspace*{-.7em}
 \begin{itemize}
 \item {\bf Ejemplo}: En un momento se decide añadir el campo {\tt
     first\_name} a partir del campo {\tt name}
@@ -798,6 +790,9 @@ if (user && user.name && !user.first_name) {
    user.first_name = user.name.split(" ")[0];
 }
 \end{lstlisting}
+
+\framebreak
+
 \begin{itemize}
 \item En SQL puede ser un proceso muy costoso (procesa toda la tabla, puede
   que haya que parar las aplicaciones):
@@ -807,11 +802,10 @@ ALTER TABLE users ADD COLUMN first_name text;
 UPDATE users SET first_name =
     substring_index(name, ' ', 1);
 \end{lstlisting}
-\end{frame}
 
-\begin{frame}
-  \frametitle{Schemaless (iii)}
-  \begin{itemize}
+\framebreak
+
+\begin{itemize}
 \item ¿Cuándo es apropiado {\em schemaless}?
   \begin{itemize}
   \item Cuando el sistema está compuesto por un número de objetos
@@ -821,17 +815,16 @@ UPDATE users SET first_name =
 \item Si intuimos que los datos cambiarán en el futuro
   \end{itemize}
 \end{itemize}
-\end{frame}
 
-\begin{frame}[fragile]
-  \frametitle{Schemaless (iv)}
+\framebreak
+
 \begin{itemize}
 \item {\bf SIN EMBARGO...} Desde un punto de vista práctico, {\bf un
     esquema es conveniente}
-\item En algunos casos necesario, para facilitar el desarrollo y evitar
+\item En algunos casos necesario \ra{} facilita el desarrollo y evita
   inconsistencias
   \begin{itemize}
-  \item {\tt Mongoose} para MongoDB permite definir esquemas:
+  \item {\tt Mongoose} para MongoDB:
   \end{itemize}
   \end{itemize}
 \begin{lstlisting}[language=Java]
@@ -852,7 +845,7 @@ Comment.path('name').set(function (v) {
 
 
 \begin{frame}
-  \frametitle{¡Pero cuidado!}
+  \frametitle{Choose wisely}
 \begin{columns}
 \begin{column}{.5\textwidth}
   \includegraphics[height=.7\textheight]{img/chose-wisely}
@@ -867,7 +860,6 @@ Comment.path('name').set(function (v) {
 \end{column}
 \end{columns}
 \end{frame}
-
 
 
 \subsection{Modelado de datos en NoSQL}
@@ -2070,9 +2062,8 @@ CREATE INDEX edges_heads ON edges (head_vertex);
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}[fragile,allowframebreaks]
   \frametitle{Ejemplo de datos y consulta en Neo4J}
-\vspace*{-1.5ex}
 \begin{block}{}
 \begin{lstlisting}
 CREATE
@@ -2084,6 +2075,9 @@ CREATE
   (Lucy) -[:BORN_IN]-> (Idaho)
 \end{lstlisting}
 \end{block}
+
+\framebreak
+
 Y de consulta:
 \begin{block}{}
 \begin{lstlisting}
@@ -2094,6 +2088,330 @@ RETURN person.name
 \end{lstlisting}
 \end{block}
 \end{frame}
+
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Aplicabilidad de Grafos}
+  \begin{itemize}
+  \item Los grafos, conceptualmente, aparecen en casi cualquier dominio
+  \item Además, su flexibilidad hace que se puedan aplicar de diferentes
+    formas
+  \item Por ejemplo, una relación de {\em follow\/} entre usuarios:
+
+    \begin{center}
+      \includegraphics[width=.4\textwidth]{img/graph1}
+    \end{center}
+  \end{itemize}
+
+    \begin{columns}
+      \begin{column}{.5\textwidth}
+        \begin{itemize}
+      \item (nótese cómo {\bf Billy no ha seguido a Ruth}: las relaciones
+        pueden ser unidireccionales o bidireccionales)
+
+      \item Pero también se puede usar para guardar el conjunto de mensajes
+        que se intercambian:
+      \end{itemize}
+    \end{column}
+      \begin{column}{.5\textwidth}
+        \begin{center}
+          \includegraphics[width=.8\textwidth]{img/graph2}
+        \end{center}
+      \end{column}
+    \end{columns}
+
+  \begin{center}
+\includegraphics[width=.86\textwidth]{img/graph}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile,allowframebreaks]
+  \frametitle{Flexibilidad y eficiencia}
+\begin{itemize}
+\item Las bases de datos basadas en grafos vienen a suplir dos carencias
+  fundamentales:
+  \begin{enumerate}
+  \item La carencia expresiva del resto de paradigmas para expresar ciertos
+    algoritmos que se expresan de forma natural en forma de grafos
+  \item La eficiencia del tratamiento de estos procesos en grafos vs. otros
+    paradigmas
+  \end{enumerate}
+\item Como ejemplo, usemos una relación de amistad ({\em friend\/}) entre
+  usuarios de una red social
+\framebreak
+\item Una posible implementación relacional podría ser:
+  \begin{center}
+    \includegraphics[width=.7\textwidth]{img/friends_table}
+  \end{center}
+\framebreak
+\item Una consulta sencilla para obtener los amigos de Bob:
+\begin{lstlisting}[language=SQL]
+SELECT p1.Person
+FROM Person p1 JOIN PersonFriend
+ON PersonFriend.FriendID = p1.ID
+JOIN Person p2
+ON PersonFriend.PersonID = p2.ID
+WHERE p2.Person = 'Bob'
+\end{lstlisting}
+\item Es sencilla y no es computacionalmente muy compleja
+\item Como la relación de amistad no es recíproca siempre, a veces hay que
+  hacer la búsqueda inversa:
+\begin{lstlisting}[language=SQL]
+SELECT p1.Person
+FROM Person p1 JOIN PersonFriend
+ON PersonFriend.PersonID = p1.ID
+JOIN Person p2
+ON PersonFriend.FriendID = p2.ID
+WHERE p2.Person = 'Bob'
+\end{lstlisting}
+\item Esta consulta es más costosa que la anterior, porque se tienen que
+  recorrer todas las filas de {\tt PersonFriend}
+
+\item Pero ¿y si queremos ``{\bf los amigos de los amigos de Alice}''?
+  Ahora la consulta es mucho más compleja computacionalmente y también más
+  difícil de expresar en SQL:
+
+\begin{lstlisting}[language=SQL]
+SELECT p1.Person AS PERSON, p2.Person AS FRIEND_OF_FRIEND
+FROM PersonFriend pf1 JOIN Person p1
+ON pf1.PersonID = p1.ID
+JOIN PersonFriend pf2
+ON pf2.PersonID = pf1.FriendID
+JOIN Person p2
+ON pf2.FriendID = p2.ID
+WHERE p1.Person = 'Alice' AND pf2.FriendID <> p1.ID
+\end{lstlisting}
+
+\item Y sólo estamos bajando un nivel (amigos de amigos de Alice)
+\item Si tuviéramos que bajar otro nivel, se haría mucho más complejo por
+  todos los {\tt JOIN}
+
+\item En {\em Neo4j in Action\/}, Partner y Vukotic hicieron un experimento
+  con Neo4j y MySQL con esta tabla
+\item Buscaron amigos de amigos en diferentes niveles de profundidad
+\item En una red de 1 millón de personas cada uno con unos~50~amigos
+
+  \begin{small}
+    \begin{tabular}{llll}
+      \toprule
+      Prof.& Tiempos RDBMS & Tiempos Neo4j & Resultados\\
+      \midrule
+      2&0,016&0,01&\~{}2500\\
+      3&30,267&0,168&\~{}110.000\\
+      4&1543,505&1,359&\~{}600.000\\
+      5&(no termina)&2,132&\~{}800.000\\
+      \bottomrule
+    \end{tabular}
+  \end{small}
+\end{itemize}
+
+\begin{center}
+  \includegraphics[width=.78\textwidth]{img/graph3}
+\end{center}
+\end{frame}
+
+\subsubsection{Neo4j}
+
+\begin{frame}
+  \frametitle{Introducción a Neo4j}
+\begin{itemize}
+\item Ofrece una base de datos de grafos con posibilidad de extenderse a
+  varios ordenadores (aunque sólo uno de los ordenadores soporta escritura,
+  replicación {\em master}-{\em slave})
+\item Es compatible con el estándar Apache TinkerPop para la creación de
+  grafos
+\item Ofrece un lenguaje de creación y consulta de grafos: {\bf Cypher}
+\item Ofrece también un {\em browser\/} web para lanzar consultas
+\item También una consola que interpreta el lenguaje Cypher
+\item Se puede usar desde Jupyter Notebook con una extensión instalada en
+  la máquina virtual
+\item Finalmente, ofrece todos sus servicios a través de un API REST
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Grafos en Neo4j}
+  \begin{itemize}
+  \item Los grafos en Neo4j son grafos etiquetados y con propiedades
+  \item Están compuestos por {\bf nodos}, {\bf relaciones}, {\bf
+      propiedades} y {\bf etiquetas}
+\item Los nodos contienen propiedades, en la forma de pares clave-valor.
+  Las claves son cadenas de caracteres y los valores pueden ser tipos
+  primitivos o {\em arrays}
+\item A los nodos se les puede etiquetar con una o más {\bfseries\itshape
+    etiquetas}. Las etiquetas agrupan nodos por rol dentro del grafo
+\item Las relaciones conectan nodos y estructuran el grafo. Una relación
+  siempre tiene una dirección, un nombre propio, un nodo de inicio y otro
+  de fin
+\item Como los nodos, las relaciones también tienen propiedades. Esto
+  permite añadir información adicional al hacer el recorrido, como el peso
+  asociado a atravesar ese enlace o la calidad del mismo. Además ayudan a
+  hacer más sencillas las consultas
+  \end{itemize}
+\end{frame}
+
+% \subsection{Browser de Neo4j}
+
+% \begin{frame}[fragile]
+%   \frametitle{Inicio de Neo4j en la máquina virtual}
+%   \begin{itemize}
+%   \item Hay que establecer el número de ficheros abierto a 40.000 (si no
+%     está ya en la máquina virtual):
+% \item En el fichero {\tt /etc/security/limits.conf}, añadir:
+% \begin{verbatim}
+% vagrant    soft    nofile    40000
+% vagrant    hard    nofile    40000
+% \end{lstlisting}
+% \item Y ejecutar, en el directorio {\em home\/} de {\tt vagrant}:
+% \begin{verbatim}
+% $ ./start-neo4j.sh
+% \end{lstlisting}
+
+% \item Y la consola:
+
+% \begin{verbatim}
+% $ neo4j/bin/neo4j-shell
+% \end{lstlisting}
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Browser}
+%   \url{http://127.0.0.1:7474}. Usuario: neo4j, pass: neo4j.\\
+%  Cambiar {\em password\/} a ``neo''
+% \includegraphics[width=\textwidth]{img/neo4jbrowser}
+% \end{frame}
+
+\subsubsection{El lenguaje Cypher}
+
+\begin{frame}[fragile]
+  \frametitle{El lenguaje Cypher}
+  \begin{itemize}
+\item Lenguaje de especificación de búsquedas y modificaciones en el
+  grafo
+\item En las búsquedas y creaciones de nodos se especifican nodos con la
+  sintaxis:
+\begin{lstlisting}[language=cypher]
+( nombre:Etiqueta { propiedad: valor, ... } )
+\end{lstlisting}
+
+\item Las relaciones se especifican entre nodos de la siguiente manera,
+  usando {\em ASCII art}:
+
+\begin{lstlisting}[language=cypher]
+(nodo_origen)-[:RELACIÓN]->(nodo_destino)
+\end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{El lenguaje Cypher (ii)}
+  \begin{itemize}
+  \item Creación de nodos y enlaces: {\tt CREATE}
+  \end{itemize}
+
+\begin{lstlisting}[language=cypher]
+CREATE (nodo1:Etiqueta1 { propX: valorX, ... } ),
+       (nodo2:Etiqueta2 { propY: valorY, ... } ),
+       ...
+       (nodo1)-[:RELACIONADO_CON]->(nodo2)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,allowframebreaks]
+  \frametitle{Consultas}
+  \begin{itemize}
+  \item Las consultas se realizan con el operador {\tt MATCH}
+  \item Es un operador de consulta a través de ejemplos ({\em query by
+      example})
+\item Especifica nodos y propiedades como un ejemplo de los nodos y
+  relaciones que se buscan
+\item La sintaxis:
+
+\begin{lstlisting}[language=cypher]
+MATCH especificación, especificación, ...
+[WHERE especificación]
+RETURN [DISTINCT] nodos
+\end{lstlisting}
+
+\item {\tt MATCH} también se utiliza para seleccionar nodos para borrar
+  ({\tt DELETE} o {\tt DETACH DELETE})
+
+  \item Las consultas nombran nodos sobre los que se pueden buscar
+    relaciones
+\item Después, con {\tt RETURN} se especifica lo que devolver
+\begin{lstlisting}[language=cypher]
+MATCH (n:Post) RETURN n
+\end{lstlisting}
+(retorna todos los {\em posts})
+
+\begin{lstlisting}[language=cypher]
+MATCH (n { nombre: 'Diego' }) RETURN n.edad;
+\end{lstlisting}
+
+y también se puede especificar relaciones que se tienen que cumplir entre
+los nodos para ser devueltos. Por ejemplo, todos los abuelos con sus
+nietos:
+
+\begin{lstlisting}[language=cypher]
+MATCH (nieto), (abuelo),
+   (nieto)-[:HIJO_DE]->()-[:HIJO_DE]->(abuelo)
+ RETURN abuelo, nieto
+\end{lstlisting}
+o incluso:
+\begin{lstlisting}[language=cypher]
+MATCH (nieto)-[:HIJO_DE]->()-[:HIJO_DE]->(abuelo)
+  RETURN abuelo, nieto
+\end{lstlisting}
+
+(nótense los nodos anónimos)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Creación de nodos a partir de otros}
+  \begin{itemize}
+  \item Un patrón común es la creación de nodos a partir de otros:
+\item P. ej. apuntar los hijos de alguien:
+\begin{lstlisting}[language=cypher]
+MATCH (padre:Persona { nombre: 'Diego' })
+ CREATE (violeta:Persona {nombre: 'Violeta'}),
+        (martina:Persona {nombre: 'Martina'}),
+        (violeta)-[:HIJO_DE]->(padre),
+        (martina)-[:HIJO_DE]->(padre)
+\end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Creación de relaciones}
+  \begin{itemize}
+  \item Para crear sólo relaciones y mezclar los nodos que ya existan se
+    suele utilizar {\tt MERGE}
+\item P. ej. si alguna de mis hijas existe, no se crea. Sólo se crean las
+  que no existen
+\begin{lstlisting}[language=cypher]
+MATCH (padre:Persona { nombre: 'Diego' })
+ MERGE (violeta:Persona {nombre: 'Violeta'}),
+        (martina:Persona {nombre: 'Martina'}),
+        (violeta)-[:HIJO_DE]->(padre),
+        (martina)-[:HIJO_DE]->(padre)
+\end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Índices}
+  \begin{itemize}
+  \item Se pueden crear índices para búsquedas rápidas sobre atributos:
+\begin{lstlisting}[language=cypher]
+CREATE INDEX ON :Etiqueta(nombre)
+\end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+
 
 \subsection{Arrays}
 
@@ -2109,6 +2427,73 @@ RETURN person.name
 \item Ejemplos: MonetDB, SciDB, rasdaman
   \end{itemize}
 \end{frame}
+
+\section{Referencias}
+
+\begin{frame}[fragile,allowframebreaks]{Referencias}
+\begin{thebibliography}{Paternostro, 2009}
+
+\setbeamertemplate{bibliography item}[book]
+\bibitem[Marz, 2015]{Marz2015}
+Nathan Marz, James Warren
+\newblock {\em Big Data: Principles and best
+  practices of scalable realtime data systems}
+\newblock Manning Publications,~2015
+
+\bibitem[Redmond, 2012]{Redmond2012}
+Eric Redmond, Jim R. Wilson
+\newblock {\em Seven Databases in Seven Weeks: A Guide to Modern Databases
+  and the NoSQL Movement}
+\newblock Pragmatic  Bookshelf,~2012
+
+\bibitem[Sadalage, 2013]{Sadalage2013}
+Pramod J. Saldage, Martin Fowler
+\newblock {\em NoSQL Distilled. A Brief Guide to the Emerging World of
+  Polyglot Persistence}
+\newblock Addison-Wesley,~2013
+
+\bibitem[Wilson, 2012]{Wilson2012}
+Jim R. Wilson, Eric Redmond
+\newblock {\em Seven Databases in Seven Weeks}
+
+\bibitem[George, 2011]{George2011}
+Lars George
+\newblock {\em HBase, The Definitive Guide}
+
+\setbeamertemplate{bibliography item}[online]
+\bibitem[ApacheHBaseTeam, 2016]{ApacheHBaseTeam2016}
+  The Apache HBase Team
+  \newblock {\em Apache HBase Reference Guide}
+  \newblock \url{https://hbase.apache.org/book.html}
+
+\bibitem[HBaseCon, 2012a]{HBaseCon2012a}
+  Ian Varley
+\newblock Vídeo: {\em HBase Schema Design}
+\newblock
+\url{http://www.cloudera.com/content/dam/www/marketing/resources/events/hbase-con/video-hbasecon-2012-hbasecon-2012.png.landing.html}
+\newblock Transparencias:
+\url{http://es.slideshare.net/ivarley/hbase-schema-design-hbasecon-2012}
+
+\bibitem[George, 2013]{George2013}
+  Lars George
+\newblock {\em HBase Schema Design}
+\newblock \url{https://2013.nosql-matters.org/cgn/wp-content/uploads/2013/05/HBase-Schema-Design-NoSQL-Matters-April-2013.pdf}
+\newblock Otro vídeo: \url{https://vimeo.com/44715954}
+\newblock Sus transparencias: \url{http://2012.berlinbuzzwords.de/sites/2012.berlinbuzzwords.de/files/slides/hbase-lgeorge-bbuzz12.pdf}
+
+\bibitem[Khurana, 2013]{khurana2013}
+Amandeep Khurana, ;login:
+\newblock {\em Introduction to HBase Schema Design}
+\newblock \url{http://0b4af6cdc2f0c5998459-c0245c5c937c5dedcca3f1764ecc9b2f.r43.cf2.rackcdn.com/9353-login1210_khurana.pdf}
+
+\bibitem[McDonald, 2015]{mcdonald2015}
+  Carol McDonald
+  \newblock {\em Guidelines for HBase Schema Design}
+  \newblock \url{https://www.mapr.com/blog/guidelines-hbase-schema-design}
+
+\end{thebibliography}
+\end{frame}
+
 
 \end{document}
 
