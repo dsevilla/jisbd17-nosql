@@ -1509,6 +1509,513 @@ HDFS posee una arquitectura distribuida:
   \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile,allowframebreaks]
+  \frametitle{Hbase Shell}
+\framesubtitle{Comandos básicos CRUD}
+\begin{itemize}
+\item Versión, estado:
+
+\begin{lstlisting}[language=ruby]
+hbase> version
+1.1.7, re7ee6fa201c4fb1962f8928df3d519b70b4ff717, Fri Oct  7 18:36:27 PDT 2016
+hbase> status
+1 servers, 0 dead, 2.0000 average load
+\end{lstlisting}
+
+\framebreak
+
+\item Creación de tablas, especificando las {\em column families}
+  iniciales:
+\begin{lstlisting}[language=ruby]
+hbase> create 'publications', 'bibdata', 'abstract', 'text', 'references'
+0 row(s) in 1.8480 seconds
+=> Hbase::Table - publications
+\end{lstlisting}
+
+\item Se crea la tabla {\tt publications} con cuatro familias de columnas,
+  {\tt bibdata}, que guardará los datos bibliográficos, {\tt abstract}, que
+  guarda el texto del {\em abstract\/}, {\tt text}, que guardará el texto
+  del artículo, y {\tt references}, que guarda las citas del artículo
+
+\framebreak
+
+\item Inserción de valores. El {\em shell\/} es limitado y sólo permite
+  añadir una columna a la vez:
+\begin{lstlisting}[language=ruby,basicstyle=\scriptsize\tt]
+hbase> put 'publications', 'My First Paper Title', 'bibdata:year', 2015
+0 row(s) in 0.2320 seconds
+hbase> put 'publications', 'My First Paper Title', 'bibdata:month', 'June'
+0 row(s) in 0.0430 seconds
+hbase> put 'publications', 'My First Paper Title', 'abstract:', 'blah blah the abstract'
+0 row(s) in 0.0090 seconds
+hbase> put 'publications', 'My First Paper Title', 'text:', 'much more blah blah in the text'
+0 row(s) in 0.0070 seconds
+\end{lstlisting}
+
+  (el formato de especificación es {\bf familia:columna})
+
+\framebreak
+
+\item Obtener el documento:
+
+\begin{lstlisting}[language=ruby,basicstyle=\tiny\tt]
+hbase> get 'publications', 'My First Paper Title'
+COLUMN                CELL
+ abstract:            timestamp=1449240855126, value=blah blah the abstract
+ bibdata:month        timestamp=1449240842660, value=June
+ bibdata:year         timestamp=1449240826958, value=2015
+ text:                timestamp=1449240868170, value=much more blah blah in the
+                      text
+4 row(s) in 0.5160 seconds
+\end{lstlisting}
+
+\framebreak
+
+\item O toda la tabla:
+\begin{lstlisting}[language=ruby,basicstyle=\tiny\tt]
+hbase> scan 'publications'
+ROW                   COLUMN+CELL
+ My First Paper Title column=abstract:, timestamp=1449240855126, value=blah blah
+                       the abstract
+ My First Paper Title column=bibdata:month, timestamp=1449240842660, value=June
+ My First Paper Title column=bibdata:year, timestamp=1449240826958, value=2015
+ My First Paper Title column=text:, timestamp=1449240868170, value=much more bla
+                      h blah in the text
+1 row(s) in 0.0450 seconds
+\end{lstlisting}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Opciones de tablas}
+\begin{itemize}
+\item {\tt VERSIONS} es por defecto 1, y se pueden especificar todas o un
+  número finito de ellas
+\item En el caso de la familia {\tt text}, aplicamos compresión, ya que la
+  familia albergará gran cantidad de texto
+\item También aplicamos al parámetro {\tt BLOOMFILTER} el valor {\tt ROW}
+\framebreak
+\item {\tt BLOOMFILTER} puede estar deshabilitado ({\tt NONE}), o tomar dos
+  valores:
+  \begin{description}[ROW]
+  \item[{\tt ROW}] Permite establecer rápidamente si una fila no existe
+    \begin{itemize}
+    \item Como hemos visto, HBase mantiene una estructura de árbol B+ para
+      encontrar las filas buscadas
+    \item Sin embargo, el árbol guarda rangos de claves, pero no si una
+      clave específica existe o no
+    \item Poniendo el valor {\tt ROW}, se crea un filtro Bloom que permite
+      descartar cuando una clave no está
+    \end{itemize}
+\framebreak
+  \item[{\tt ROWCOLUMN}] Realiza también un filtro Bloom para describir si
+    una columna está en una fila concreta o no. Las columnas pueden ser
+    muchas. Además, se utiliza un fichero para cada familia de columnas.
+    Por lo tanto, si no se tiene este índice, se tienen que hacer muchas
+    comprobaciones para saber si una de las columnas a mostrar está en una
+    fila concreta o no. El filtro Bloom con valor {\tt ROWCOLUMN} crea un
+    filtro Bloom para las columnas de cada fila
+  \end{description}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{{\tt happybase}}
+  \begin{itemize}
+\item Hay varios paquetes para acceder a HBase
+\item Incluso podríamos haberlo implementado desde JRuby y el {\em shell\/}
+  de HBase
+\item Pero lo haremos desde Python ya que lo hemos usado en todo el curso,
+  usando la librería {\tt
+    happybase}\footnote{\url{https://happybase.readthedocs.io/en/latest/}.}
+\item Hace uso del protocolo remoto Thrift
+\item Instalada en la máquina virtual. Si no, para instalarla:
+\begin{lstlisting}[language=bash]
+$ pip install happybase
+\end{lstlisting}
+\item El API es sencillo, ya que HBase ofrece relativamente pocas
+  operaciones
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Creación de la base de datos}
+\begin{lstlisting}[language=python]
+try:
+    self.connection.create_table(
+        "wlinks",
+        {
+            'from': dict(bloom_filter_type='ROW',max_versions=1),
+            'to' : dict(bloom_filter_type='ROW',max_versions=1)
+        })
+except:
+    print ("Database wlinks already exists.")
+    pass
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Búsquedas y filtrado}
+\begin{itemize}
+\item Como se ha visto, el diseño de las tablas HBase tiene que ir
+  orientado a la {\bf optimización de las lecturas}
+\item Por lo tanto se tiene que desnormalizar todo lo necesario
+\item Se tiene que buscar que con un único acceso se obtenga toda la
+  información necesaria
+\item Sin embargo, esto no es posible siempre:
+  \begin{itemize}
+  \item Por ejemplo, se tiene que procesar un conjunto de elementos no
+    predeterminado
+  \item Se quieren calcular resultados agregados semanales, diarios, etc.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Búsquedas y filtrado}
+\begin{itemize}
+\item HBase ofrece un lenguaje de filtrado que se puede utilizar para que
+  el servidor filtre los resultados
+\item Se puede usar desde clientes Thrift remotos (como {\tt happybase}) y
+  desde el {\em shell}
+\item Es el servidor, en cada región en paralelo, el que realiza el
+  filtrado
+\item Se gana en escalabilidad horizontal si hay muchos {\tt RegionServer}s
+\item Aunque ofrece diversos mecanismos de filtrado, no todos son igual de
+  eficientes
+\item De hecho, el principal problema es que hay mucha diferencia (hasta el
+  punto de hacer algunos impracticables) si no se usan bien
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Búsquedas y filtrado}
+  \includegraphics[width=\textwidth]{img/filter-region-server}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Especificación de filtros}
+\begin{itemize}
+\item Los filtros se especifican como parte de la llamada {\tt scan}
+\item Hay dos niveles de filtrado:
+  \begin{itemize}
+  \item El referido a columnas, que se especifica con el parámetro {\tt
+      COLUMNS} en el {\em shell\/} y {\tt columns=} en {\tt happybase}:
+
+\begin{verbatim}
+scan 'tabla', { COLUMNS => ['c1', 'c2'] }
+\end{verbatim}
+
+  \item Los filtros completos:
+
+\begin{verbatim}
+scan 'tabla' , { FILTER => "Filtro" }
+\end{verbatim}
+
+(y se pueden combinar ambos)
+
+  \end{itemize}
+\item En las bibliotecas cliente como {\tt happybase} con un parámetro de
+  la función {\tt scan}:
+\begin{lstlisting}
+table.scan(filter="Filtro...")
+\end{lstlisting}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Especificación de filtros (ii)}
+\begin{itemize}
+\item Así, las consultas se pueden ordenar en cuanto a su velocidad de
+  ejecución:
+  \begin{enumerate}
+  \item Consultas de orden constante, como {\tt get} con un conjunto de
+    columnas
+  \item Consultas rápidas porque hacen uso de los filtros Bloom: Prefijos
+    de claves, familias de columnas, prefijos de familias de columnas, etc
+  \item Resto de consultas más lentas, que requieren en algunos casos el
+    recorrido de toda la tabla (a evitar): Búsqueda por un valor en
+    concreto, búsqueda de expresiones regulares, etc.\\
+    (Aunque todavía se benefician del escaneo en paralelo de todas las
+    regiones en RegionServers)
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile,allowframebreaks]
+  \frametitle{Sintaxis de filtros}
+  \begin{itemize}
+  \item La sintaxis general de los filtros es:
+
+\begin{verbatim}
+Filtro (parámetro1, parámetro2, ...)
+\end{verbatim}
+
+  \item Los filtros se pueden unir con expresiones complejas que incluyan
+    paréntesis y también los operadores {\tt AND}, {\tt OR}, {\tt SKIP} y
+    {\tt WHILE}
+    \begin{itemize}
+    \item {\tt SKIP} especifica que se ignore la fila si falla el filtro
+      alguno de los pares columna/valor
+    \item {\tt WHILE} muestra todos los conjuntos columna/valor de cada
+      fila hasta que un conjunto no cumple el filtro
+    \end{itemize}
+
+  \item Se ofrecen también operaciones de comparación: \verb|<|, \verb|<=|,
+    \verb|=|, \verb|!=|, \verb|>=|, etc.
+
+\framebreak
+
+  \item Y un conjunto de ``comparadores'':
+
+    \begin{itemize}
+    \item {\em BinaryComparator} -- Comparador binario lexicográfico de
+      elementos. Se representa con ``{\tt binary}''
+    \item {\em BinaryPrefixComparator} -- Comaprador binario de prefijos.
+      Se representa con ``{\tt binaryprefix}''
+    \item {\em RegexStringComparator} -- Comparador de cadenas usando una
+      expresión regular: ``{\tt regexstring}''
+    \item {\em SubStringComparator} -- Comparador de subcadena: ``{\tt
+        substring}''
+    \end{itemize}
+
+\framebreak
+
+  \item El formato de especificación es:
+
+\begin{verbatim}
+comparador:valor
+\end{verbatim}
+
+    Por ejemplo:
+
+    \begin{itemize}
+    \item {\tt binary:abc}
+    \item {\tt binaryprefix:abc}
+    \item {\tt regexstring:ab*c*}
+    \item {\tt substring:def}
+    \end{itemize}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,allowframebreaks]
+  \frametitle{Filtros}
+
+  \begin{itemize}
+  \item {\tt KeyOnlyFilter} -- No acepta argumentos y retorna sólo las
+    claves de los pares clave/valor:
+
+\lstset{basicstyle=\tiny\tt}
+
+\begin{lstlisting}
+hbase> scan 'tags', {FILTER => "KeyOnlyFilter()"}
+...
+ 998                  column=rawdata:Count, timestamp=1479423572196, value=
+ 998                  column=rawdata:ExcerptPostId, timestamp=1479423572196, val
+                      ue=
+ 998                  column=rawdata:TagName, timestamp=1479423572196, value=
+ 998                  column=rawdata:WikiPostId, timestamp=1479423572196, value=
+\end{lstlisting}
+
+\item {\tt FirstKeyOnlyFilter} -- Retorna sólo la primera clave de cada
+  fila
+
+  \framebreak
+
+  \item {\tt PrefixFilter} -- Prefijo de fila dado:
+
+    \begin{lstlisting}
+hbase> scan 'tags', {FILTER => "PrefixFilter('9')"}
+...
+ 998                  column=rawdata:TagName, timestamp=1479423572196, value=saf
+                      ari
+ 998                  column=rawdata:WikiPostId, timestamp=1479423572196, value=
+                      17125
+\end{lstlisting}
+
+  \item {\tt ColumnPrefixFilter} -- Prefijo de columna dado:
+
+\begin{lstlisting}
+hbase> scan 'tags', {FILTER => "ColumnPrefixFilter('W')"}
+ 995                  column=rawdata:WikiPostId, timestamp=1479423572195, value=
+ 996                  column=rawdata:WikiPostId, timestamp=1479423572195, value=
+                      15828
+ 998                  column=rawdata:WikiPostId, timestamp=1479423572196, value=
+                      17125
+\end{lstlisting}
+
+    \framebreak
+
+\item {\tt MultipleColumnPrefixFilter} -- (lista)
+
+\item {\tt ColumnCountGetFilter} -- Retorna hasta el número $n$ de columnas
+  dado
+
+\item {\tt PageFilter} -- Permite paginación de resultados por clave de
+  fila
+
+  \framebreak
+
+\item {\tt RowFilter} -- Coge un operador de comparación y un comparador.
+  Si la fila encaja con la comparación, la fila entera si muestra:
+
+\begin{lstlisting}
+hbase> scan 'tags', {FILTER => "RowFilter(<,'binary:2')"}
+...
+ 199                  column=rawdata:ExcerptPostId, timestamp=1479423572117, val
+                      ue=521
+ 199                  column=rawdata:TagName, timestamp=1479423572117, value=mav
+                      en
+ 199                  column=rawdata:WikiPostId, timestamp=1479423572117, value=
+                      520
+\end{lstlisting}
+
+  % MultipleColumnPrefixFilter
+% This filter takes a list of column prefixes. It returns key-values that are present in a column that starts with any of the specified column prefixes. Each of the column prefixes must be of the form: “qualifier”.
+
+% ColumnCountGetFilter
+% This filter takes one argument – a limit. It returns the first limit number of columns in the table.
+
+% PageFilter
+% This filter takes one argument – a page size. It returns page size number of rows from the table.
+
+% ColumnPaginationFilter
+% This filter takes two arguments – a limit and offset. It returns limit number of columns after offset number of columns. It does this for all the rows.
+
+% InclusiveStopFilter
+% This filter takes one argument – a row key on which to stop scanning. It
+% returns all key-values present in rows up to and including the specified
+% row.
+
+% TimeStampsFilter
+% This filter takes a list of timestamps. It returns those key-values whose timestamps matches any of the specified timestamps.
+
+% RowFilter
+% This filter takes a compare operator and a comparator. It compares each row key with the comparator using the compare operator and if the comparison returns true, it returns all the key-values in that row.
+
+\item {\tt FamilyFilter} -- Acepta un operador y un comparador. Muestra
+  todas las columnas de familias de las columnas que cumplen el filtro.
+  Puede ser rápido si se ha definido un filtro Bloom {\tt ROWCOL} para las
+  familias de columnas
+
+\item {\tt QualifierFilter} -- Acepta un operador y un comparador. Muestra
+  todas las columnas dentro de cualquier familia de columnas que cumplen el
+  filtro. De nuevo, con filtros {\tt ROWCOL} funciona mejor porque puede
+  eliminar muchas filas
+
+
+% Family Filter
+% This filter takes a compare operator and a comparator. It compares each column family name with the comparator using the compare operator and if the comparison returns true, it returns all the Cells in that column family.
+
+% QualifierFilter
+% This filter takes a compare operator and a comparator. It compares each qualifier name with the comparator using the compare operator and if the comparison returns true, it returns all the key-values in that column.
+
+\item {\tt ValueFilter} -- Acepta un operador y un comparador. Si algún
+  valor de algún par clave/valor coincide, se muestran todos los elementos
+  de la fila
+
+% ValueFilter
+% This filter takes a compare operator and a comparator. It compares each value with the comparator using the compare operator and if the comparison returns true, it returns that key-value.
+
+% DependentColumnFilter
+% This filter takes two arguments – a family and a qualifier. It tries to locate this column in each row and returns all key-values in that row that have the same timestamp. If the row doesn’t contain the specified column – none of the key-values in that row will be returned.
+  \framebreak
+
+\item {\tt SingleColumnValueFilter} -- Acepta una familia de columnas, un
+  calificador de columna, un operador de comparación y un comparador. Si la
+  columna no está o está y tiene el valor especificado, se lista toda la
+  fila
+
+\begin{lstlisting}
+hbase> scan 'tags', {FILTER => "SingleColumnValueFilter('rawdata', 'TagName', =,'binary:safari')"}
+ROW                   COLUMN+CELL
+ 998                  column=rawdata:Count, timestamp=1479423572196, value=2
+ 998                  column=rawdata:ExcerptPostId, timestamp=1479423572196, val
+                      ue=17126
+ 998                  column=rawdata:TagName, timestamp=1479423572196, value=saf
+                      ari
+ 998                  column=rawdata:WikiPostId, timestamp=1479423572196, value=
+                      17125
+1 row(s) in 0.0650 seconds
+\end{lstlisting}
+
+% SingleColumnValueFilter
+% This filter takes a column family, a qualifier, a compare operator and a comparator. If the specified column is not found – all the columns of that row will be emitted. If the column is found and the comparison with the comparator returns true, all the columns of the row will be emitted. If the condition fails, the row will not be emitted.
+
+% SingleColumnValueExcludeFilter
+% This filter takes the same arguments and behaves same as SingleColumnValueFilter – however, if the column is found and the condition passes, all the columns of the row will be emitted except for the tested column value.
+
+\item {\tt ColumnRangeFilter} -- Acepta dos valores de columna y dos
+  booleanos. Muestra las columnas que están entre los valores. Los
+  booleanos especifican si se incluyen los valores límite o no.
+
+% ColumnRangeFilter
+% This filter is used for selecting only those keys with columns that are between minColumn and maxColumn. It also takes two boolean variables to indicate whether to include the minColumn and maxColumn or not.
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Resumen de filtros y características}
+  \includegraphics[width=\textwidth]{img/filterlist1}
+\end{frame}
+\begin{frame}
+  \frametitle{Resumen de filtros y características}
+  \begin{center}
+    \includegraphics[width=.8\textwidth]{img/filterlist2}
+  \end{center}
+\end{frame}
+\begin{frame}
+  \frametitle{Resumen de filtros y características}
+  \includegraphics[width=\textwidth]{img/filterlist3}
+\end{frame}
+
+\begin{frame}[fragile,allowframebreaks]
+  \frametitle{Filtros vs. {\tt get}}
+  \begin{itemize}
+  \item Por muy eficiente que se haga el filtrado, un {\tt scan} siempre va
+    a ser mucho más lento que obtener una fila con {\tt get}
+  \item P.ej (3580ms):
+\begin{lstlisting}
+hbase> scan 'wlinks', { COLUMNS => ['to:19'] }
+...
+ Yilmar Mosquera      column=to:19, timestamp=1479230326585, value=
+ Yukiko Iwai          column=to:19, timestamp=1479230347810, value=
+113 row(s) in 35.7690 seconds
+\end{lstlisting}
+
+    \framebreak
+
+  \item vs (18ms):
+\begin{lstlisting}
+hbase> get 'wlinks', '19', { COLUMNS => ['from'] }
+...
+ from:Yilmar Mosquera timestamp=1479230326578, value=
+ from:Yukiko Iwai     timestamp=1479230347796, value=
+113 row(s) in 0.1760 seconds
+\end{lstlisting}
+
+  \item También existe una especificación de fila de inicio y final que son
+    más eficientes que un filtro {\em Row Prefix}:
+
+\begin{lstlisting}
+hbase> scan 'wlinks', {STARTROW => '19', ENDROW => '20', COLUMNS => ['from'] }
+\end{lstlisting}
+
+    Y en {\tt happybase}:
+
+\begin{lstlisting}[language=Python]
+table.scan(row_start='19', row_stop='20', columns=['from'])
+\end{lstlisting}
+
+  \end{itemize}
+\end{frame}
+
+
 
 \subsection{Bases de Datos de Grafos}
 
