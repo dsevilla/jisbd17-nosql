@@ -31,7 +31,7 @@ def imgfile_to_base64(path):
 
 def img_to_base64(image):
     buffer = cStringIO.StringIO()
-    image.save(buffer, format="JPEG")
+    image.save(buffer, format="PNG")
     return base64.b64encode(buffer.getvalue())
 
 def img_from_base64(b64string):

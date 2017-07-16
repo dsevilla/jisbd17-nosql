@@ -359,8 +359,8 @@ $ docker run --rm -d --name mongo -p 27017:27017 mongo
 
     \framebreak
 
-  \item Quiero crear la base de datos ``{\tt slides}'' y la colección
-    ``{\tt slides}''
+  \item Quiero crear la base de datos ``{\tt presentations}'' y la colección
+    ``{\tt jisbd17}''
 \begin{lstlisting}[language=python]
 import pymongo
 from pymongo import MongoClient
@@ -368,8 +368,8 @@ client = MongoClient("localhost", 27017)
 \end{lstlisting}
 
 \begin{lstlisting}[language=python]
-db = client.slides
-slides = db.slides  # colección slides
+db = client.presentations
+jisbd17 = db.jisbd17  # colección jisbd17
 \end{lstlisting}
 
     \framebreak
@@ -377,9 +377,10 @@ slides = db.slides  # colección slides
 \item Datos para una diapositiva:
 
 \begin{lstlisting}[language=python]
-slides.insert_one(
+jisbd17.insert_one(
   {'_id': 'slide000',
    'title': 'blah',
+   'text' : '',
    'image': None,
    'references':
         [{'type': 'web',
@@ -405,7 +406,7 @@ for file in files:
     img_to_thumbnail(img)
     slidename = os.path.basename(
                   os.path.splitext(file)[0])
-    slides.update_one(
+    jisbd17.update_one(
               {'_id': slidename},
               {'$set' : {'image': img_to_base64(img)}},
               True)
@@ -456,7 +457,7 @@ SELECT * FROM Slides WHERE `_id` = 'slide000';
 \end{lstlisting}
   \item ¿{\tt xref}? ¿{\tt references}?
 \begin{lstlisting}[language=sql]
-SELECT * FROM Slides s
+SELECT * FROM Jisbd17 s
   JOIN References r ON `s._id` = r.slide_id
   JOIN Slide_xref x ON `s._id` = x.slide_id
 WHERE `s._id` = 'slide000';
@@ -470,7 +471,7 @@ WHERE `s._id` = 'slide000';
 
 \begin{block}{MongoDB}
 \begin{lstlisting}[language=Python]
-slide = slides.find_one({'_id': 'slide000'})
+slide = jisbd17.find_one({'_id': 'slide000'})
 \end{lstlisting}
 \end{block}
 
