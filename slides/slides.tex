@@ -1510,7 +1510,19 @@ jisbd17.find_one({'text': {'$regex' : '[Mm]ongo'}})['_id']
 
 \begin{frame}
   \frametitle{Índices, {\tt explain()}}
-
+  \begin{itemize}
+  \item La llamada {\tt .explain()} a cualquier búsqueda muestra el plan
+    de ejecución
+\item Se puede crear un índice si la búsqueda por ese campo va a ser
+  crítica
+\item Se pueden crear más índices:
+  \begin{itemize}
+  \item {\tt ASCENDING}
+  \item {\tt DESCENDING}
+  \item {\tt HASHED}
+  \item y geoespaciales
+  \end{itemize}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -1522,7 +1534,6 @@ jisbd17.find_one({'text': {'$regex' : '[Mm]ongo'}})['_id']
   \frametitle{Framework de agregación}
   \centering\includegraphics[height=.85\textheight]{img/mongo-aggregation}
 \end{frame}
-
 
 
 \subsection{Bases de Datos Columnares}
