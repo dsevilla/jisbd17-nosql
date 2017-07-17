@@ -1933,16 +1933,16 @@ $ pip install happybase
   \frametitle{Creación de la base de datos}
 \begin{lstlisting}[language=python]
 try:
-    self.connection.create_table(
-        "slides",
+    connection.create_table(
+        "jisbd17",
         {
             'slide': dict(bloom_filter_type='ROW',max_versions=1),
             'image' : dict(compression='GZ',max_versions=1),
             'text' : dict(compression='GZ',max_versions=1),
-            'xref' : dict(bloom_filter_type='ROWCOLUMN',max_versions=1)
+            'xref' : dict(bloom_filter_type='ROWCOL',max_versions=1)
         })
 except:
-    print ("Database wlinks already exists.")
+    print ("Database jisbd17 already exists.")
     pass
 \end{lstlisting}
 \end{frame}
