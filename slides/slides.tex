@@ -1857,20 +1857,18 @@ hbase(main):007:0> put 'slides', 'jisbd17-000', 'slide:notes', 'Notas iniciales'
 
 \begin{lstlisting}[language=ruby,basicstyle=\tiny\tt]
 hbase> get 'slides', 'jisbd17-000'
-COLUMN                CELL                                                      
- slide:notes          timestamp=1500300013076, value=Notas iniciales            
- slide:title          timestamp=1500299771997, value=Portada                    
+COLUMN                CELL
+ slide:notes          timestamp=1500300013076, value=Notas iniciales
+ slide:title          timestamp=1500299771997, value=Portada
 2 row(s) in 0.1700 seconds
 \end{lstlisting}
-
-\framebreak
 
 \item O toda la tabla:
 \begin{lstlisting}[language=ruby,basicstyle=\tiny\tt]
 base> scan 'slides'
-ROW                   COLUMN+CELL                                               
+ROW                   COLUMN+CELL
  jisbd17-000          column=slide:notes, timestamp=1500300013076, value=Notas i
-                      niciales                                                  
+                      niciales
  jisbd17-000          column=slide:title, timestamp=1500299771997, value=Portada
 1 row(s) in 0.0400 seconds
 \end{lstlisting}
@@ -1941,7 +1939,7 @@ try:
             'slide': dict(bloom_filter_type='ROW',max_versions=1),
             'image' : dict(compression='GZ',max_versions=1),
             'text' : dict(compression='GZ',max_versions=1),
-            'xref' : dict(bloom_filter_type='ROW',max_versions=1)
+            'xref' : dict(bloom_filter_type='ROWCOLUMN',max_versions=1)
         })
 except:
     print ("Database wlinks already exists.")
@@ -1964,7 +1962,7 @@ except:
   \end{itemize}
 
 \framebreak
-  
+
 \item HBase \ra{} lenguaje de filtrado \ra{} el servidor filtre los
   resultados
 \item Clientes Thrift remotos y desde el {\em shell}
