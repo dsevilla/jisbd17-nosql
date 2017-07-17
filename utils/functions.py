@@ -24,19 +24,26 @@ def load_img(path):
 
 def img_to_thumbnail(img):
     img.thumbnail((512,512),PImage.ANTIALIAS)
+    return img
 
 def imgfile_to_base64(path):
     image = load_img(path)
     return img_to_base64(image)
 
-def img_to_base64(image):
+def img_to_bytebuffer(image):
     buffer = cStringIO.StringIO()
     image.save(buffer, format="PNG")
-    return base64.b64encode(buffer.getvalue())
+    return buffer.getvalue()
+
+def img_to_base64(image):
+    return base64.b64encode(img_to_bytebuffer(image))
 
 def img_from_base64(b64string):
     image_string = cStringIO.StringIO(base64.b64decode(b64string))
     return PImage.open(image_string)
+
+def img_from_bytebuffer(buffer):
+    return PImage.open(cStringIO.StringIO(buffer))
 
 from PIL import ImageFont
 from PIL import ImageDraw
@@ -45,7 +52,6 @@ import math
 font = ImageFont.truetype("fonts/OpenSans-ExtraBold.ttf", 150)
 #fontEmoji = ImageFont.truetype("fonts/OpenSansEmoji.ttf", 150)
 font_small = ImageFont.truetype("fonts/OpenSans-ExtraBold.ttf", 50)
-
 
 #def sayEmoji(string):
 #    return say_(string, fontEmoji)
@@ -85,8 +91,8 @@ def say_(string, font):
     for y in range(imgsize[1]):
         for x in range(imgsize[0]):
 
-            #Find the distance to the center
-            distanceToCenter = math.sqrt((x) ** 2 + (y ) ** 2)
+            #Find the distance to the corner
+            distanceToCorner = math.sqrt((x) ** 2 + (y ) ** 2)
 
             #Make it on a scale from 0 to 1
             distanceToCenter = float(distanceToCenter) / (1.4142 * imgsize[0])
