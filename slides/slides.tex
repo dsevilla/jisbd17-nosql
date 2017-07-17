@@ -1747,7 +1747,7 @@ ordenadores. ``{\bf La base de datos de Hadoop}''
 
 \end{frame}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
   \frametitle{Tecnologías habilitadoras de HBase}
 HBase sobre Hadoop (HDFS y Map-Reduce)
 \begin{itemize}
@@ -1758,6 +1758,9 @@ HBase sobre Hadoop (HDFS y Map-Reduce)
 \item Una instalación de HBase utiliza un conjunto de {\bfseries\itshape
     Region Servers}: nodos de computación con almacenamiento local (y
   conectados al clúster HDFS)
+
+\framebreak
+
 \item Cada grupo de columnas (llamado {\bfseries\itshape Column~Family\/})
   se almacena en un {\bf Store} ({\bf partición vertical})
 \item El {\bf Store} tiene una parte en memoria ({\bf MemStore}) y,
@@ -1898,12 +1901,12 @@ ROW                   COLUMN+CELL
       descartar cuando una clave no está
     \end{itemize}
 \framebreak
-  \item[{\tt ROWCOLUMN}] Realiza también un filtro Bloom para describir si
+  \item[{\tt ROWCOL}] Realiza también un filtro Bloom para describir si
     una columna está en una fila concreta o no. Las columnas pueden ser
     muchas. Además, se utiliza un fichero para cada familia de columnas.
     Por lo tanto, si no se tiene este índice, se tienen que hacer muchas
     comprobaciones para saber si una de las columnas a mostrar está en una
-    fila concreta o no. El filtro Bloom con valor {\tt ROWCOLUMN} crea un
+    fila concreta o no. El filtro Bloom con valor {\tt ROWCOL} crea un
     filtro Bloom para las columnas de cada fila
   \end{description}
 \end{itemize}
@@ -1929,7 +1932,7 @@ $ pip install happybase
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}[fragile,fragile,fragile,allowframebreaks]
   \frametitle{Creación de la base de datos}
 \begin{lstlisting}[language=python]
 try:
@@ -1945,6 +1948,61 @@ except:
     print ("Database jisbd17 already exists.")
     pass
 \end{lstlisting}
+
+  \framebreak
+
+Podemos copiar la tabla {\tt jisbd17} de Mongo (no se copia {\tt xref}
+porque se hará una optimización posterior):
+
+\begin{lstlisting}[language=python]
+h_jisbd17 = hbasecon.table('jisbd17')
+with h_jisbd17.batch(batch_size=100) as b:
+    for doc in jisbd17.find():
+        b.put(doc['_id'], {
+            'slide:title' : doc.get('title',''),
+            'slide:notes' : doc.get('notes',''),
+            'text:' : doc.get('text', ''),
+            'image:' : str(doc.get('image',''))
+        })
+\end{lstlisting}
+
+\framebreak
+
+Con {\tt xref} podemos usar una optimización en HBase:
+
+\begin{itemize}
+\item Las filas pueden crecer tanto como se quiera también en columnas
+\item El filtro {\em Bloom} {\tt ROWCOL} hace muy eficiente buscar por una
+  columna en particular
+\end{itemize}
+
+{\bf IDEA}: Usar los elementos del array como nombres de las columnas.
+Convierte automáticamente a esa columna en un {\bf índice inverso}:
+
+\framebreak
+
+\begin{lstlisting}[language=python]
+with h_jisbd17.batch(batch_size=100) as b:
+    for doc in jisbd17.find():
+        if 'xref' in doc:
+            for ref in doc['xref']:
+                b.put(doc['_id'], {
+                    'xref:'+ref : ''
+                })
+\end{lstlisting}
+
+Y la búsqueda de índice inverso: Las fila que {\bf contienen la
+  columna que buscamos} (filas que apuntan a la buscada):
+
+\begin{lstlisting}[language=python]
+list(h_jisbd17.scan(columns=['xref:jisbd17-002']))
+==> [('jisbd17-000', {'xref:jisbd17-002': ''})]
+\end{lstlisting}
+
+Finalmente, en HBase, un {\tt scan} es una {\em pérdida de tiempo} \ra{} Se
+debería precomputar la referencia inversa e incluirla en cada {\em slide}.
+La búsqueda así es O(1)
+
 \end{frame}
 
 \begin{frame}[allowframebreaks]
