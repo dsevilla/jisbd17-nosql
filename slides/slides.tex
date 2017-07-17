@@ -1566,7 +1566,7 @@ results = jisbd17.map_reduce(map, reduce, "myresults")
   \centering\includegraphics[height=.85\textheight]{img/mongo-aggregation}
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]
+\begin{frame}[fragile,fragile,allowframebreaks]
   \frametitle{Framework de agregación}
 Framework de agregación:
 \url{https://docs.mongodb.com/manual/reference/operator/aggregation/}.
@@ -1603,15 +1603,29 @@ inicialmente añadiendo al principio:
 {'$match': { 'text' : {'$regex': 'HBase'}}}
 \end{lstlisting}
 
-La construcción \verb|$lookup| permite el acceso a otra colección. Es
-equivalente a un {\bf JOIN}.
+La construcción
+\verb|$lookup| permite el acceso a otra (o a la misma) colección. Es
+equivalente a un {\bf JOIN}
 
 \begin{block}{}
-  \begin{itemize}
-  \item Imaginemos otra colección {\bf Conferences}, donde listo las
-    conferencias a las que he ido
-  \item xx
-  \end{itemize}
+  Por ejemplo, listar los títulos de las transparencias referenciadas
+  (además de su {\tt \_id})
+
+\begin{lstlisting}[language=python]
+jisbd17.aggregate( [
+    {'$lookup' : {
+        "from": "jisbd17",
+        "localField": "xref",
+        "foreignField": "_id",
+        "as": "xrefTitles"
+    }},
+    {'$project' : {
+        '_id' : True,
+        'xref' : True,
+        'xrefTitles.title' : True
+    }}
+    ])
+\end{lstlisting}
 \end{block}
 
 \end{frame}
