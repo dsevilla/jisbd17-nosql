@@ -2010,16 +2010,19 @@ scan 'tabla' , { FILTER => "Filtro" }
 table.scan(filter="Filtro...")
 \end{lstlisting}
 
+\framebreak
+
 \item Ordenación de las consultas en cuanto a su velocidad de ejecución:
   \begin{enumerate}
-  \item Consultas de orden constante, como {\tt get} con un conjunto de
-    columnas
+  \item Consultas de orden constante, como {\tt get} con clave o un
+    conjunto de columnas
   \item Consultas rápidas porque hacen uso de los filtros Bloom: Prefijos
-    de claves, familias de columnas, prefijos de familias de columnas, etc
-  \item Resto de consultas más lentas, que requieren en algunos casos el
+    de claves, familias de columnas, prefijos de familias de columnas,
+    \ldots
+  \item Consultas más lentas, que requieren en algunos casos el
     recorrido de toda la tabla (a evitar): Búsqueda por un valor en
     concreto, búsqueda de expresiones regulares, etc.\\
-    (Aunque todavía se benefician del escaneo en paralelo de todas las
+    (Todavía se benefician del escaneo en paralelo de todas las
     regiones en RegionServers)
   \end{enumerate}
 \end{itemize}
@@ -2092,13 +2095,17 @@ comparador:valor
 \lstset{basicstyle=\tiny\tt}
 
 \begin{lstlisting}
-hbase> scan 'tags', {FILTER => "KeyOnlyFilter()"}
+hbase> scan 'jisbd17', {FILTER => "KeyOnlyFilter()"}
 ...
- 998                  column=rawdata:Count, timestamp=1479423572196, value=
- 998                  column=rawdata:ExcerptPostId, timestamp=1479423572196, val
-                      ue=
- 998                  column=rawdata:TagName, timestamp=1479423572196, value=
- 998                  column=rawdata:WikiPostId, timestamp=1479423572196, value=
+ jisbd17-154             column=image:, timestamp=1500328162013, value=
+ jisbd17-154             column=slide:notes, timestamp=1500328162013, value=
+ jisbd17-154             column=slide:title, timestamp=1500328162013, value=
+ jisbd17-154             column=text:, timestamp=1500328162013, value=
+ jisbd17-155             column=image:, timestamp=1500328162013, value=
+ jisbd17-155             column=slide:notes, timestamp=1500328162013, value=
+ jisbd17-155             column=slide:title, timestamp=1500328162013, value=
+ jisbd17-155             column=text:, timestamp=1500328162013, value=
+319 row(s) in 0.5430 seconds
 \end{lstlisting}
 
 \item {\tt FirstKeyOnlyFilter} -- Retorna sólo la primera clave de cada
@@ -2109,23 +2116,25 @@ hbase> scan 'tags', {FILTER => "KeyOnlyFilter()"}
   \item {\tt PrefixFilter} -- Prefijo de fila dado:
 
     \begin{lstlisting}
-hbase> scan 'tags', {FILTER => "PrefixFilter('9')"}
+hbase> scan 'jisbd17', {FILTER => "PrefixFilter('jisbd17-0')"}
 ...
- 998                  column=rawdata:TagName, timestamp=1479423572196, value=saf
-                      ari
- 998                  column=rawdata:WikiPostId, timestamp=1479423572196, value=
-                      17125
+jisbd17-099          column=slide:notes, timestamp=1500328162137, value=
+jisbd17-099          column=slide:title, timestamp=1500328162137, value={\x5Ctt
+                       happybase
+jisbd17-099          column=text:, timestamp=1500328162137, value=  \x5Cbegin{i
+                      temize}\x0A\x5Citem Hay varios paquetes para acceder a HBa
+100 row(s) in 8.7800 seconds
 \end{lstlisting}
 
   \item {\tt ColumnPrefixFilter} -- Prefijo de columna dado:
 
 \begin{lstlisting}
-hbase> scan 'tags', {FILTER => "ColumnPrefixFilter('W')"}
- 995                  column=rawdata:WikiPostId, timestamp=1479423572195, value=
- 996                  column=rawdata:WikiPostId, timestamp=1479423572195, value=
-                      15828
- 998                  column=rawdata:WikiPostId, timestamp=1479423572196, value=
-                      17125
+hbase> scan 'jisbd17', {FILTER => "ColumnPrefixFilter('t')"}
+...
+ jisbd17-159          column=slide:title, timestamp=1500328162182, value=
+ jisbd17-160          column=slide:title, timestamp=1500328162182, value=
+ jisbd17-161          column=slide:title, timestamp=1500328162182, value=
+ jisbd17-162          column=slide:title, timestamp=1500328162182, value=
 \end{lstlisting}
 
     \framebreak
@@ -2144,14 +2153,14 @@ hbase> scan 'tags', {FILTER => "ColumnPrefixFilter('W')"}
   Si la fila encaja con la comparación, la fila entera si muestra:
 
 \begin{lstlisting}
-hbase> scan 'tags', {FILTER => "RowFilter(<,'binary:2')"}
+hbase> scan 'jisbd17', {FILTER => "RowFilter(<,'binary:jisbd17-1')"}
 ...
- 199                  column=rawdata:ExcerptPostId, timestamp=1479423572117, val
-                      ue=521
- 199                  column=rawdata:TagName, timestamp=1479423572117, value=mav
-                      en
- 199                  column=rawdata:WikiPostId, timestamp=1479423572117, value=
-                      520
+jisbd17-099          column=slide:notes, timestamp=1500328162137, value=
+jisbd17-099          column=slide:title, timestamp=1500328162137, value={\x5Ctt
+                       happybase
+jisbd17-099          column=text:, timestamp=1500328162137, value=  \x5Cbegin{i
+                      temize}\x0A\x5Citem Hay varios paquetes para acceder a HBa
+100 row(s) in 8.7800 seconds
 \end{lstlisting}
 
   % MultipleColumnPrefixFilter
@@ -2211,16 +2220,13 @@ hbase> scan 'tags', {FILTER => "RowFilter(<,'binary:2')"}
   fila
 
 \begin{lstlisting}
-hbase> scan 'tags', {FILTER => "SingleColumnValueFilter('rawdata', 'TagName', =,'binary:safari')"}
-ROW                   COLUMN+CELL
- 998                  column=rawdata:Count, timestamp=1479423572196, value=2
- 998                  column=rawdata:ExcerptPostId, timestamp=1479423572196, val
-                      ue=17126
- 998                  column=rawdata:TagName, timestamp=1479423572196, value=saf
-                      ari
- 998                  column=rawdata:WikiPostId, timestamp=1479423572196, value=
-                      17125
-1 row(s) in 0.0650 seconds
+hbase> scan 'jisbd17', {FILTER => "SingleColumnValueFilter('slide', 'title', =,'binary:HBase')"}
+ jisbd17-085          column=slide:notes, timestamp=1500328162109, value=
+ jisbd17-085          column=slide:title, timestamp=1500328162109, value=HBase
+ jisbd17-085          column=text:, timestamp=1500328162109, value=  \x5Cbegin{b
+                      lock}{}\x0A    {\x5CLarge  HBase is a {\x5Ccolor{red} spar
+                      ...
+1 row(s) in 0.3610 seconds
 \end{lstlisting}
 
 % SingleColumnValueFilter
