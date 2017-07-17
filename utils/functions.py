@@ -12,7 +12,7 @@ slidedir = "slides/slides-dir"
 # Display slides
 def ds(number, nslides=1):
     for i in range(nslides):
-        display(Image('{}/slide{:03d}.png'.format(slidedir, number+i)))  
+        display(Image('{}/jisbd17-{:03d}.png'.format(slidedir, number+i)))  
     
 # Image to Base64
 import base64

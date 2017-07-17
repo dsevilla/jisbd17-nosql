@@ -11,7 +11,7 @@ all: $(TARGETS)
 
 slides-dir: $(TARGETS)
 	-test -d slides-dir || mkdir slides-dir
-	convert -alpha remove -density 200 $< slides-dir/slide\%03d.png
+	convert -alpha remove -density 200 $< slides-dir/jisbd17-\%03d.png
 
 define pdfrule
 $(1).pdf: $(1).tex
