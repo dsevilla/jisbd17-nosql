@@ -1566,6 +1566,35 @@ results = jisbd17.map_reduce(map, reduce, "myresults")
   \centering\includegraphics[height=.85\textheight]{img/mongo-aggregation}
 \end{frame}
 
+\begin{frame}[fragile,fragile]
+  \frametitle{Framework de agregación}
+Framework de agregación:
+\url{https://docs.mongodb.com/manual/reference/operator/aggregation/}.
+
+\begin{lstlisting}[language=python]
+jisbd17.aggregate( [ {'$project' : { 'Id' : 1 }}, {'$limit': 20} ])
+\end{lstlisting}
+
+\begin{lstlisting}[language=python]
+hbase_by_length = jisbd17.aggregate( [
+        #{'$match': { 'text' : {'$regex': 'HBase'}}},
+        {'$project': {
+            'text' : {'$ifNull' : ['$text', '']}
+        }},
+        {'$project' : {
+             'id' : {'$strLenBytes': '$text'},
+             'value' : {'$literal' : 1}
+        }
+        },
+        {'$group' : {
+            '_id' : '$id',
+            'count' : {'$sum' : '$value'}
+        }
+        },
+        {'$sort' : { '_id' : 1}}
+        ])
+\end{lstlisting}
+\end{frame}
 
 \subsection{Bases de Datos Columnares}
 
