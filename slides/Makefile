@@ -10,7 +10,7 @@ LATEXMK = latexmk -recorder -use-make -deps
 all: $(TARGETS)
 
 slides-dir: $(TARGETS)
-	-test -d slides-dir || mkdir slides-dir
+	-rm -rf slides-dir && mkdir slides-dir
 	convert -alpha remove -density 200 $< slides-dir/jisbd17-\%03d.png
 
 define pdfrule
