@@ -2363,18 +2363,18 @@ table.scan(row_start='19', row_stop='20', columns=['from'])
 
 \subsection{Bases de Datos de Grafos}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
   \frametitle{Bases de Datos de Grafos}
 \vspace*{-1ex}
   \begin{itemize}
   \item Las bases de datos de grafos llevan el mecanismo {\em muchos a
       muchos} al extremo
-\item Datos en los que existen muchas relaciones entre sí y
-  tienen un significado primordial
+  \item Datos en los que existen muchas relaciones entre sí y {\bf las
+      relaciones} tienen un significado primordial
 \item Las bases de datos de grafos se basan en la construcción y consulta
   de un grafo que consta de
   \begin{itemize}
-  \item {\bf Vértices}, también llamados {\em nodos} o {\em entidades}, y
+  \item {\bf Vértices} también llamados {\em nodos} o {\em entidades}, y
   \item {\bf Aristas} ({\bfseries\itshape Edges}), también llamados {\em
       relaciones}
   \end{itemize}
@@ -2438,6 +2438,10 @@ MATCH
 RETURN person.name
 \end{lstlisting}
 \end{block}
+
+(con esta consulta tan cercana al lenguaje natural, estamos buscando los
+emigrantes de EEUU en Europa)
+
 \end{frame}
 
 
@@ -2460,7 +2464,7 @@ RETURN person.name
       \item (nótese cómo {\bf Billy no ha seguido a Ruth}: las relaciones
         pueden ser unidireccionales o bidireccionales)
 
-      \item Pero también se puede usar para guardar el conjunto de mensajes
+      \item Incluso se puede usar para guardar el conjunto de mensajes
         que se intercambian:
       \end{itemize}
     \end{column}
@@ -2471,9 +2475,6 @@ RETURN person.name
       \end{column}
     \end{columns}
 
-  \begin{center}
-\includegraphics[width=.86\textwidth]{img/graph}
-  \end{center}
 \end{frame}
 
 \begin{frame}[fragile,allowframebreaks]
@@ -2563,7 +2564,7 @@ WHERE p1.Person = 'Alice' AND pf2.FriendID <> p1.ID
 
 \subsubsection{Neo4j}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
   \frametitle{Introducción a Neo4j}
 \begin{itemize}
 \item Ofrece una base de datos de grafos con posibilidad de extenderse a
@@ -2574,8 +2575,8 @@ WHERE p1.Person = 'Alice' AND pf2.FriendID <> p1.ID
 \item Ofrece un lenguaje de creación y consulta de grafos: {\bf Cypher}
 \item Ofrece también un {\em browser\/} web para lanzar consultas
 \item También una consola que interpreta el lenguaje Cypher
-\item Se puede usar desde Jupyter Notebook con una extensión instalada en
-  la máquina virtual
+\item Se puede usar desde Jupyter Notebook con la extensión {\tt
+    ipython-cypher}
 \item Finalmente, ofrece todos sus servicios a través de un API REST
   \end{itemize}
 \end{frame}
@@ -2643,7 +2644,7 @@ WHERE p1.Person = 'Alice' AND pf2.FriendID <> p1.ID
 \item En las búsquedas y creaciones de nodos se especifican nodos con la
   sintaxis:
 \begin{lstlisting}[language=cypher]
-( nombre:Etiqueta { propiedad: valor, ... } )
+(nombre:Etiqueta {propiedad: valor, ... })
 \end{lstlisting}
 
 \item Las relaciones se especifican entre nodos de la siguiente manera,
@@ -2726,10 +2727,10 @@ MATCH (nieto)-[:HIJO_DE]->()-[:HIJO_DE]->(abuelo)
 \item P. ej. apuntar los hijos de alguien:
 \begin{lstlisting}[language=cypher]
 MATCH (padre:Persona { nombre: 'Diego' })
- CREATE (violeta:Persona {nombre: 'Violeta'}),
-        (martina:Persona {nombre: 'Martina'}),
-        (violeta)-[:HIJO_DE]->(padre),
-        (martina)-[:HIJO_DE]->(padre)
+CREATE (violeta:Persona {nombre:'Violeta'}),
+       (martina:Persona {nombre:'Martina'}),
+       (violeta)-[:HIJO_DE]->(padre),
+       (martina)-[:HIJO_DE]->(padre)
 \end{lstlisting}
   \end{itemize}
 \end{frame}
@@ -2743,10 +2744,10 @@ MATCH (padre:Persona { nombre: 'Diego' })
   que no existen
 \begin{lstlisting}[language=cypher]
 MATCH (padre:Persona { nombre: 'Diego' })
- MERGE (violeta:Persona {nombre: 'Violeta'}),
-        (martina:Persona {nombre: 'Martina'}),
-        (violeta)-[:HIJO_DE]->(padre),
-        (martina)-[:HIJO_DE]->(padre)
+MERGE (violeta:Persona {nombre: 'Violeta'}),
+      (martina:Persona {nombre: 'Martina'}),
+      (violeta)-[:HIJO_DE]->(padre),
+      (martina)-[:HIJO_DE]->(padre)
 \end{lstlisting}
   \end{itemize}
 \end{frame}
@@ -2766,11 +2767,12 @@ CREATE INDEX ON :Etiqueta(nombre)
 
 \subsection{Arrays}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
   \frametitle{Bases de Datos basadas en Arrays}
   \begin{itemize}
 \item Suelen presentarse como bases de datos que soportan SQL y añaden
   operaciones para trabajar con conjuntos de datos especiales (arrays)
+\item Son bases de datos muy especializadas y no las trataremos aquí
 \item Utilizadas para tratamiento de grandes cantidades de datos de forma
   estadística o de modelado y OLAP
 \item Soportan también datos geográficos, ya que pueden definir rangos
