@@ -1818,29 +1818,25 @@ hbase(main):001:0> status
 \item Creación de tablas, especificando las {\em column families}
   iniciales:
 \begin{lstlisting}[language=ruby]
-hbase> create 'publications', 'bibdata', 'abstract', 'text', 'references'
-0 row(s) in 1.8480 seconds
-=> Hbase::Table - publications
+hbase> create 'slides', 'slide', 'image', 'text', 'xref'
+0 row(s) in 1.3810 seconds
+=> Hbase::Table - slides
 \end{lstlisting}
 
-\item Se crea la tabla {\tt publications} con cuatro familias de columnas,
-  {\tt bibdata}, que guardará los datos bibliográficos, {\tt abstract}, que
-  guarda el texto del {\em abstract\/}, {\tt text}, que guardará el texto
-  del artículo, y {\tt references}, que guarda las citas del artículo
+\item Se crea la tabla {\tt presentaciones} con cuatro familias de columnas,
+  {\tt slide}, que guardará los datos de la transparencia, {\tt image}, que
+  guarda la imagen de la diapositiva, {\tt text}, que guardará el texto
+  de la diapositiva, y {\tt xref}, que guarda las referencias a otras slides
 
 \framebreak
 
 \item Inserción de valores. El {\em shell\/} es limitado y sólo permite
   añadir una columna a la vez:
 \begin{lstlisting}[language=ruby,basicstyle=\scriptsize\tt]
-hbase> put 'publications', 'My First Paper Title', 'bibdata:year', 2015
-0 row(s) in 0.2320 seconds
-hbase> put 'publications', 'My First Paper Title', 'bibdata:month', 'June'
-0 row(s) in 0.0430 seconds
-hbase> put 'publications', 'My First Paper Title', 'abstract:', 'blah blah the abstract'
-0 row(s) in 0.0090 seconds
-hbase> put 'publications', 'My First Paper Title', 'text:', 'much more blah blah in the text'
-0 row(s) in 0.0070 seconds
+hbase(main):006:0> put 'slides', 'jisbd17-000', 'slide:title', 'Portada'
+0 row(s) in 0.1730 seconds
+hbase(main):007:0> put 'slides', 'jisbd17-000', 'slide:notes', 'Notas iniciales'
+0 row(s) in 0.0110 seconds
 \end{lstlisting}
 
   (el formato de especificación es {\bf familia:columna})
@@ -1850,29 +1846,23 @@ hbase> put 'publications', 'My First Paper Title', 'text:', 'much more blah blah
 \item Obtener el documento:
 
 \begin{lstlisting}[language=ruby,basicstyle=\tiny\tt]
-hbase> get 'publications', 'My First Paper Title'
-COLUMN                CELL
- abstract:            timestamp=1449240855126, value=blah blah the abstract
- bibdata:month        timestamp=1449240842660, value=June
- bibdata:year         timestamp=1449240826958, value=2015
- text:                timestamp=1449240868170, value=much more blah blah in the
-                      text
-4 row(s) in 0.5160 seconds
+hbase> get 'slides', 'jisbd17-000'
+COLUMN                CELL                                                      
+ slide:notes          timestamp=1500300013076, value=Notas iniciales            
+ slide:title          timestamp=1500299771997, value=Portada                    
+2 row(s) in 0.1700 seconds
 \end{lstlisting}
 
 \framebreak
 
 \item O toda la tabla:
 \begin{lstlisting}[language=ruby,basicstyle=\tiny\tt]
-hbase> scan 'publications'
-ROW                   COLUMN+CELL
- My First Paper Title column=abstract:, timestamp=1449240855126, value=blah blah
-                       the abstract
- My First Paper Title column=bibdata:month, timestamp=1449240842660, value=June
- My First Paper Title column=bibdata:year, timestamp=1449240826958, value=2015
- My First Paper Title column=text:, timestamp=1449240868170, value=much more bla
-                      h blah in the text
-1 row(s) in 0.0450 seconds
+base> scan 'slides'
+ROW                   COLUMN+CELL                                               
+ jisbd17-000          column=slide:notes, timestamp=1500300013076, value=Notas i
+                      niciales                                                  
+ jisbd17-000          column=slide:title, timestamp=1500299771997, value=Portada
+1 row(s) in 0.0400 seconds
 \end{lstlisting}
 \end{itemize}
 
