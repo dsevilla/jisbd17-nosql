@@ -517,6 +517,16 @@ slide = jisbd17.find_one({'_id': 'jisbd17-000'})
   \end{itemize}
 \end{frame}
 
+\begin{frame}
+  \frametitle{NoSQL}
+\centering\includegraphics[width=\textwidth]{img/nosqldatabases3}
+\end{frame}
+
+\begin{frame}
+  \frametitle{NoSQL}
+\centering\includegraphics[width=\textwidth]{img/nosqldatabases}
+\end{frame}
+
 \begin{frame}[allowframebreaks]
   \frametitle{NoSQL -- ¿Por qué se plantearon?}
 %En general, el desarrollo de NoSQL ha venido motivado, entre otras, por una
@@ -1926,10 +1936,12 @@ $ pip install happybase
 \begin{lstlisting}[language=python]
 try:
     self.connection.create_table(
-        "wlinks",
+        "slides",
         {
-            'from': dict(bloom_filter_type='ROW',max_versions=1),
-            'to' : dict(bloom_filter_type='ROW',max_versions=1)
+            'slide': dict(bloom_filter_type='ROW',max_versions=1),
+            'image' : dict(compression='GZ',max_versions=1),
+            'text' : dict(compression='GZ',max_versions=1),
+            'xref' : dict(bloom_filter_type='ROW',max_versions=1)
         })
 except:
     print ("Database wlinks already exists.")
@@ -1937,35 +1949,29 @@ except:
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
   \frametitle{Búsquedas y filtrado}
 \begin{itemize}
 \item Como se ha visto, el diseño de las tablas HBase tiene que ir
   orientado a la {\bf optimización de las lecturas}
-\item Por lo tanto se tiene que desnormalizar todo lo necesario
-\item Se tiene que buscar que con un único acceso se obtenga toda la
-  información necesaria
+\item {\bf Desnormalizar todo lo necesario}
+\item {\bf Con un único acceso} se obtenga toda la información necesaria
 \item Sin embargo, esto no es posible siempre:
   \begin{itemize}
   \item Por ejemplo, se tiene que procesar un conjunto de elementos no
     predeterminado
   \item Se quieren calcular resultados agregados semanales, diarios, etc.
   \end{itemize}
-\end{itemize}
-\end{frame}
 
-\begin{frame}
-  \frametitle{Búsquedas y filtrado}
-\begin{itemize}
-\item HBase ofrece un lenguaje de filtrado que se puede utilizar para que
-  el servidor filtre los resultados
-\item Se puede usar desde clientes Thrift remotos (como {\tt happybase}) y
-  desde el {\em shell}
-\item Es el servidor, en cada región en paralelo, el que realiza el
-  filtrado
-\item Se gana en escalabilidad horizontal si hay muchos {\tt RegionServer}s
-\item Aunque ofrece diversos mecanismos de filtrado, no todos son igual de
-  eficientes
+\framebreak
+  
+\item HBase \ra{} lenguaje de filtrado \ra{} el servidor filtre los
+  resultados
+\item Clientes Thrift remotos y desde el {\em shell}
+\item Filtrado de cada región en paralelo
+\item Escalabilidad horizontal con varios {\tt RegionServer}s
+\item Aunque ofrece diversos mecanismos de filtrado, {\bf no todos son
+    igual de eficientes}
 \item De hecho, el principal problema es que hay mucha diferencia (hasta el
   punto de hacer algunos impracticables) si no se usan bien
 \end{itemize}
@@ -1976,7 +1982,7 @@ except:
   \includegraphics[width=\textwidth]{img/filter-region-server}
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}[fragile,allowframebreaks]
   \frametitle{Especificación de filtros}
 \begin{itemize}
 \item Los filtros se especifican como parte de la llamada {\tt scan}
@@ -1985,32 +1991,28 @@ except:
   \item El referido a columnas, que se especifica con el parámetro {\tt
       COLUMNS} en el {\em shell\/} y {\tt columns=} en {\tt happybase}:
 
-\begin{verbatim}
-scan 'tabla', { COLUMNS => ['c1', 'c2'] }
-\end{verbatim}
+\begin{lstlisting}[language=ruby]
+scan 'tabla',{COLUMNS => ['c1', 'c2']}
+\end{lstlisting}
 
   \item Los filtros completos:
 
-\begin{verbatim}
+\begin{lstlisting}[language=ruby]
 scan 'tabla' , { FILTER => "Filtro" }
-\end{verbatim}
+\end{lstlisting}
 
 (y se pueden combinar ambos)
-
   \end{itemize}
+
+\framebreak
+
 \item En las bibliotecas cliente como {\tt happybase} con un parámetro de
   la función {\tt scan}:
-\begin{lstlisting}
+\begin{lstlisting}[language=Python]
 table.scan(filter="Filtro...")
 \end{lstlisting}
-\end{itemize}
-\end{frame}
 
-\begin{frame}[fragile]
-  \frametitle{Especificación de filtros (ii)}
-\begin{itemize}
-\item Así, las consultas se pueden ordenar en cuanto a su velocidad de
-  ejecución:
+\item Ordenación de las consultas en cuanto a su velocidad de ejecución:
   \begin{enumerate}
   \item Consultas de orden constante, como {\tt get} con un conjunto de
     columnas
