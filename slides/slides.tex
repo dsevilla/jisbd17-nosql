@@ -1743,7 +1743,7 @@ ordenadores. ``{\bf La base de datos de Hadoop}''
   \end{block}
 
   \begin{block}{}
-    ...con patrones de acceso conocidos bien de antemano y sin gran
+    ...con patrones de acceso bien conocidos de antemano y sin gran
     complejidad
   \end{block}
 
@@ -1927,7 +1927,7 @@ ROW                   COLUMN+CELL
 \item Hace uso del protocolo remoto Thrift
 \item Instalada en la máquina virtual. Si no, para instalarla:
 \begin{lstlisting}[language=bash]
-$ pip install happybase
+$ sudo pip2 install happybase
 \end{lstlisting}
 \item El API es sencillo, ya que HBase ofrece relativamente pocas
   operaciones
@@ -2568,7 +2568,8 @@ WHERE p1.Person = 'Alice' AND pf2.FriendID <> p1.ID
 
 \begin{frame}[allowframebreaks]
   \frametitle{Introducción a Neo4j}
-\begin{itemize}
+\centering\includegraphics[width=.4\textwidth]{img/neo4j-logo-2015}
+  \begin{itemize}
 \item Ofrece una base de datos de grafos con posibilidad de extenderse a
   varios ordenadores (aunque sólo uno de los ordenadores soporta escritura,
   replicación {\em master}-{\em slave})
@@ -2595,12 +2596,16 @@ WHERE p1.Person = 'Alice' AND pf2.FriendID <> p1.ID
 \item A los nodos se les puede etiquetar con una o más {\bfseries\itshape
     etiquetas}. Las etiquetas agrupan nodos por rol dentro del grafo
 \item Las relaciones conectan nodos y estructuran el grafo. Una relación
-  siempre tiene una dirección, un nombre propio, un nodo de inicio y otro
-  de fin
-\item Como los nodos, las relaciones también tienen propiedades. Esto
-  permite añadir información adicional al hacer el recorrido, como el peso
-  asociado a atravesar ese enlace o la calidad del mismo. Además ayudan a
-  hacer más sencillas las consultas
+  siempre tiene:
+  \begin{itemize}
+  \item una dirección,
+  \item un nombre propio,
+  \item un nodo de inicio y otro de fin
+  \item un conjunto de propiedades
+  \end{itemize}
+\item Las propiedades permiten añadir información adicional al hacer el
+  recorrido, como el peso asociado a atravesar ese enlace o la calidad del
+  mismo. Además ayudan a hacer más sencillas las consultas
   \end{itemize}
 \end{frame}
 
