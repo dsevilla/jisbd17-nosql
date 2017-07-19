@@ -71,6 +71,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{tikz}
+\usetikzlibrary{calc,math,shapes.callouts,shapes.arrows,shapes.geometric,fit,positioning,arrows.meta}
 \usetikzlibrary{positioning,backgrounds}
 \usetikzlibrary{decorations.pathmorphing,math}
 %\usepackage{iwona}
@@ -2787,6 +2788,151 @@ CREATE INDEX ON :Etiqueta(nombre)
   numéricos de una o varias dimensiones (2D para cálculos geográficos)
 \item Ejemplos: MonetDB, SciDB, rasdaman
   \end{itemize}
+\end{frame}
+
+
+\section{Nuestro trabajo de investigación}
+
+\begin{frame}
+  \frametitle{Investigación en NoSQL Data Engineering}
+
+  \begin{itemize}
+  \item NoSQL Data Engineering
+  \item Toolbox MDE para gestionar BBDD NoSQL
+    \begin{itemize}
+    \item Inferencia del esquema
+    \item Tratamiento de la variabilidad de entidades (versiones)
+    \item Generación de código de mappers ODM, transformación de bases de
+      datos, etc.
+    \end{itemize}
+  \end{itemize}
+
+  \url{https://github.com/catedrasaes-umu/NoSQLDataEngineering}
+  
+\centering  \includegraphics[height=3em]{img/logo_catedra}%
+  ~\includegraphics[height=3em]{img/logo_modelum}
+  
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{BBDD NoSQL sin esquema explícito}
+  \framesubtitle{El esquema se encuentra implícito en los datos}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+\begin{lstlisting}[language=json,basicstyle=\tiny\tt]
+{
+  "person_id": "123",
+  "type": "Person",
+  "lastName": "Rush",
+  "firstName": "Christopher",
+  º"address": "C/Gran Via, 13, Madrid"º
+},
+{
+  "person_id": "456",
+  "type": "Person",
+  "lastName": "England",
+  "firstName": "Wayne",
+  º"address": {
+    "street": "Av. Pinos, 24",
+    "city": "Murcia" }º
+},
+{
+  "person_id": "789",
+  "type": "Person",
+  "lastName": "Hoover",
+  "firstName": "Quinton",
+  "address": "Ronda Norte, 15, Murcia",
+  @"age": 35@
+}
+      \end{lstlisting}
+    \end{column}
+    \begin{column}{0.05\textwidth}
+      \begin{center}
+        \usetikzlibrary{decorations.pathreplacing}
+        \begin{tikzpicture}
+          \draw [decorate,decoration={brace,amplitude=10pt,mirror,raise=4pt},yshift=0pt]
+          (3.5,0.65) -- (3.5,6.5) node [black,midway,xshift=0.8cm] {\footnotesize};
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \vspace{1cm}
+      \usetikzlibrary{arrows}
+      \begin{tikzpicture}
+        [node distance = .5\textwidth, auto, font=\normalsize,
+        every node/.style={node distance=.5\textwidth},
+        db/.style={cylinder, cylinder uses custom fill, cylinder end fill=yellow!50,
+        cylinder body fill=yellow!25, aspect=.3, shape border rotate=90, draw,
+        inner sep=5pt, text width=.3\textwidth, text height=.2\textwidth, text badly centered}]
+        \node [db] (nosqldb) {{\tiny Base de datos NoSQL}};
+        \path[draw=black,solid,line width=2mm,fill=black, preaction={-triangle 90,thin,draw,shorten >=-1mm}] (-3.5, 0) -- (-1.35, 0);
+      \end{tikzpicture}
+      \hspace{-2cm}
+\begin{small}
+      \begin{itemize}
+        \item Datos no uniformes
+        \item Existencia de distintas versiones
+      \end{itemize}
+    \end{small}
+  \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Proceso de inferencia NoSQLSchema}
+  \framesubtitle{Vista general de la arquitectura MDE empleada}
+  \centering
+  \begin{tikzpicture}
+[node distance = .1\textwidth, auto, font=\tiny,
+every node/.style={node distance=.25\textwidth},
+db/.style={cylinder, cylinder uses custom fill, cylinder end fill=yellow!50,
+cylinder body fill=yellow!25, aspect=.3, shape border rotate=90, draw,
+inner sep=5pt, text width=.1\textwidth, text badly centered},
+process/.style={ellipse, draw, fill=red!10, inner sep=5pt, text width=.12\textwidth, text badly centered},
+prod/.style={rectangle, draw, fill=green!10, inner sep=5pt, text width=.12\textwidth, text badly centered}]
+% Draw nodes
+\node [db] (nosqldb) {Base de datos\\NoSQL};
+\node [process, right of=nosqldb] (mapreduce) {Map-reduce};
+\node [prod, right of=mapreduce] (ov) {Colección\\de objetos JSON};
+\node [process, right of=ov] (jsoninject) {Transformación\\de objetos};
+\node [prod, below=.05\textwidth of jsoninject] (jm) {Colección\\de versiones};
+\node [process,below=.05\textwidth of jm] (schrev) {Proceso de\\ingeniería\\inversa};
+\node [prod, left of=schrev] (schmod) {Modelo\\NoSQLSchema};
+\node [process, left of=schmod] (appgen) {Generación de herramientas};
+\node [prod, left of=appgen,label=below:Herramientas] (apps) {$\Rightarrow$Visualización de esquemas\\\vspace{0.1cm}$\Rightarrow$Validación de datos\\\vspace{0.1cm}$\Rightarrow$Asistencia a la migración};
+
+\node [prod, below=.05\textwidth of schmod] (schemamm) {Metamodelo\\NoSQLSchema};
+%%%%%%%%%%%%%%%%
+% Draw the links between forces
+\path[-{Stealth},very thick]
+(nosqldb) edge (mapreduce)
+(mapreduce) edge (ov)
+(ov) edge (jsoninject)
+(jsoninject) edge (jm)
+(jm) edge (schrev)
+(schrev) edge (schmod)
+(schmod) edge (appgen)
+(appgen) edge (apps);
+
+\path[-{Stealth},dotted,very thick]
+(schmod) edge node[right] {<<conforma>>} (schemamm);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Metamodelo NoSQLSchema}
+  \includegraphics[width=\textwidth]{img/mmnosql-schema}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Visualizaciones (i)}
+  \includegraphics[width=\textwidth]{img/siriusglobalunion}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Visualizaciones (ii)}
+  \includegraphics[width=\textwidth]{img/siriusglobal}
 \end{frame}
 
 \section{Referencias}
