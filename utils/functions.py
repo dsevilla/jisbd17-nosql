@@ -51,7 +51,7 @@ import math
 
 font = ImageFont.truetype("fonts/OpenSans-ExtraBold.ttf", 150)
 #fontEmoji = ImageFont.truetype("fonts/OpenSansEmoji.ttf", 150)
-font_small = ImageFont.truetype("fonts/OpenSans-ExtraBold.ttf", 50)
+font_small = ImageFont.truetype("fonts/OpenSans-ExtraBold.ttf", 60)
 
 #def sayEmoji(string):
 #    return say_(string, fontEmoji)

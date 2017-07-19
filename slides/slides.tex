@@ -710,10 +710,10 @@ Cassandra desarrollada en Facebook en~2009\\
 \vspace*{-9em}
 \begin{block}{Procesamiento distribuido}
 \begin{itemize}
-\item Vuelta al modelo funcional inherentemente paralelo: (i.e. {\bf
+\item Vuelta al modelo funcional inherentemente paralelo: (e.g. {\bf
     Map-Reduce})
-\item Almacenamiento distribuido: (i.e. {\bf HDFS})
-\item Coordinación distribuida: (i.e. {\bf Zookeeper})
+\item Almacenamiento distribuido: (e.g. {\bf HDFS})
+\item Coordinación distribuida: (e.g. {\bf Zookeeper})
 \end{itemize}
 \end{block}%
 }%
@@ -1087,8 +1087,9 @@ El modelo de documentos no aporta ventajas
   \item Un pequeño test sintético nos puede ayudar a hacernos una
     idea\footnote{\url{http://bonesmoses.org/2016/07/15/pg-phriday-a-postgres-persepctive-on-mongodb/}.}
 
-\item La prueba se realizó sobre MongoDB y sobre MySQL (se ha adaptado el
-  original, que era para PostgreSQL)
+  \item La prueba se realizó sobre MongoDB y sobre MySQL (se ha adaptado el
+    original, que era para PostgreSQL)\footnote{Datos disponibles en:
+      \url{https://github.com/dsevilla/bdge/tree/master/addendum}.}
 
   \framebreak
 
@@ -1882,7 +1883,7 @@ ROW                   COLUMN+CELL
 \end{frame}
 
 \begin{frame}[allowframebreaks]
-  \frametitle{Opciones de tablas}
+  \frametitle{Opciones de creación de tablas}
 \begin{itemize}
 \item {\tt VERSIONS} es por defecto 1, y se pueden especificar todas o un
   número finito de ellas
@@ -2605,7 +2606,7 @@ WHERE p1.Person = 'Alice' AND pf2.FriendID <> p1.ID
   \end{itemize}
 \item Las propiedades permiten añadir información adicional al hacer el
   recorrido, como el peso asociado a atravesar ese enlace o la calidad del
-  mismo. Además ayudan a hacer más sencillas las consultas
+  mismo
   \end{itemize}
 \end{frame}
 
