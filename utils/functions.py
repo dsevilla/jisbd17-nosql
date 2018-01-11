@@ -16,7 +16,10 @@ def ds(number, nslides=1):
     
 # Image to Base64
 import base64
-import cStringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from PIL import Image as PImage
 
 def load_img(path):
