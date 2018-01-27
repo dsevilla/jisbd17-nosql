@@ -16,10 +16,7 @@ def ds(number, nslides=1):
     
 # Image to Base64
 import base64
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+import io
 from PIL import Image as PImage
 
 def load_img(path):
@@ -34,7 +31,7 @@ def imgfile_to_base64(path):
     return img_to_base64(image)
 
 def img_to_bytebuffer(image):
-    buffer = cStringIO.StringIO()
+    buffer = io.BytesIO()
     image.save(buffer, format="PNG")
     return buffer.getvalue()
 
@@ -42,11 +39,11 @@ def img_to_base64(image):
     return base64.b64encode(img_to_bytebuffer(image))
 
 def img_from_base64(b64string):
-    image_string = cStringIO.StringIO(base64.b64decode(b64string))
+    image_string = io.StringIO(base64.b64decode(b64string))
     return PImage.open(image_string)
 
 def img_from_bytebuffer(buffer):
-    return PImage.open(cStringIO.StringIO(buffer))
+    return PImage.open(io.BytesIO(buffer))
 
 from PIL import ImageFont
 from PIL import ImageDraw
@@ -121,7 +118,7 @@ class DictTable(dict):
     # and renders an HTML Table in IPython Notebook.
     def _repr_html_(self):
         html = ["<table width=100%>"]
-        for key, value in self.iteritems():
+        for key, value in self.items():
             html.append("<tr>")
             html.append("<td>{0}</td>".format(key))
             html.append("<td>{0}</td>".format(value))

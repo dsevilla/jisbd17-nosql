@@ -1,8 +1,14 @@
 version: '3'
 services:
   notebook:
-    image: "jupyter/all-spark-notebook"
+    build: .
+    user: root
+    environment:
+      - GRANT_SUDO=yes
+    privileged: true
     ports:
       - "8888:8888"
+    network_mode: "host"
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - .:/home/jovyan/talk
