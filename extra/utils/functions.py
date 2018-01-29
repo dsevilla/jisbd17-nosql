@@ -49,9 +49,9 @@ from PIL import ImageFont
 from PIL import ImageDraw
 import math
 
-font = ImageFont.truetype("fonts/OpenSans-ExtraBold.ttf", 150)
-#fontEmoji = ImageFont.truetype("fonts/OpenSansEmoji.ttf", 150)
-font_small = ImageFont.truetype("fonts/OpenSans-ExtraBold.ttf", 60)
+font = ImageFont.truetype("extra/fonts/OpenSans-ExtraBold.ttf", 150)
+#fontEmoji = ImageFont.truetype("extra/fonts/OpenSansEmoji.ttf", 150)
+font_small = ImageFont.truetype("extra/fonts/OpenSans-ExtraBold.ttf", 60)
 
 #def sayEmoji(string):
 #    return say_(string, fontEmoji)
@@ -59,7 +59,7 @@ font_small = ImageFont.truetype("fonts/OpenSans-ExtraBold.ttf", 60)
 def say(string):
     return say_(string, font)
 
-yodaimg = PImage.open('images/yoda.jpg')
+yodaimg = PImage.open('extra/images/yoda.jpg')
 scale=1.5
 
 def yoda(string):
