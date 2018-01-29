@@ -7,6 +7,5 @@ EXPOSE 8888
 USER root
 
 RUN apt-get update && \
-    apt-get install -y docker.io && \
-    usermod -a -G docker jovyan
+    apt-get install -y docker.io
     
